@@ -124,8 +124,8 @@ floorNormalTex.tex.colorSpace = THREE.NoColorSpace;
 floorNormalTex.tex.wrapS = floorNormalTex.tex.wrapT = THREE.RepeatWrapping;
 floorNormalTex.tex.repeat.set(2, 2);
 
-// 2. 墙面：日系奶油白和纸暗纹墙纸
-const wallTex = canvasTexture(512, 512, (ctx, w, h) => {
+// 2. 墙面：日系奶油白和纸暗纹墙纸（优化至 256x256 节省显存）
+const wallTex = canvasTexture(256, 256, (ctx, w, h) => {
   ctx.fillStyle = '#fbf5eb'; ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = 'rgba(190,165,140,0.06)';
   ctx.lineWidth = 1;
@@ -135,7 +135,7 @@ const wallTex = canvasTexture(512, 512, (ctx, w, h) => {
   for (let y = 0; y < h; y += 4) {
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y + rand(-0.4, 0.4)); ctx.stroke();
   }
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 100; i++) {
     ctx.fillStyle = rand(0, 1) > 0.5 ? 'rgba(165,135,105,0.05)' : 'rgba(255,255,255,0.38)';
     ctx.fillRect(rand(0, w), rand(0, h), rand(1, 2), rand(1, 2));
   }
@@ -143,7 +143,7 @@ const wallTex = canvasTexture(512, 512, (ctx, w, h) => {
 wallTex.tex.wrapS = wallTex.tex.wrapT = THREE.RepeatWrapping;
 wallTex.tex.repeat.set(3, 2);
 
-// 3. 护墙板：日系雾绿板条纹理（垂直木槽与柔光）
+// 3. 护墙板：日系雾绿板条纹理（垂直木槽与柔光，256x256）
 const wainscotTex = canvasTexture(256, 256, (ctx, w, h) => {
   ctx.fillStyle = '#a6c3b0'; ctx.fillRect(0, 0, w, h);
   const slatW = 32;
@@ -156,39 +156,39 @@ const wainscotTex = canvasTexture(256, 256, (ctx, w, h) => {
 wainscotTex.tex.wrapS = wainscotTex.tex.wrapT = THREE.RepeatWrapping;
 wainscotTex.tex.repeat.set(4, 1);
 
-// 4. 家具木纹：温暖焦糖/原木（书桌、书架、床身）
-const furnitureWoodTex = canvasTexture(512, 512, (ctx, w, h) => {
+// 4. 家具木纹：温暖焦糖/原木（书桌、书架、床身，优化至 256x256）
+const furnitureWoodTex = canvasTexture(256, 256, (ctx, w, h) => {
   const g = ctx.createLinearGradient(0, 0, 0, h);
   g.addColorStop(0, '#b98356'); g.addColorStop(0.5, '#ab7649'); g.addColorStop(1, '#bb8558');
   ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-  for (let i = 0; i < 48; i++) {
+  for (let i = 0; i < 32; i++) {
     const y = rand(0, h);
     ctx.strokeStyle = rand(0, 1) > 0.5 ? 'rgba(85,45,15,0.11)' : 'rgba(255,240,215,0.15)';
-    ctx.lineWidth = rand(1, 2.8);
+    ctx.lineWidth = rand(1, 2.2);
     ctx.beginPath();
     ctx.moveTo(0, y);
-    ctx.bezierCurveTo(w * 0.35, y + rand(-12, 12), w * 0.7, y + rand(-12, 12), w, y + rand(-8, 8));
+    ctx.bezierCurveTo(w * 0.35, y + rand(-8, 8), w * 0.7, y + rand(-8, 8), w, y + rand(-6, 6));
     ctx.stroke();
   }
 });
 furnitureWoodTex.tex.wrapS = furnitureWoodTex.tex.wrapT = THREE.RepeatWrapping;
 furnitureWoodTex.tex.repeat.set(2, 2);
 
-// 5. 地毯：分层编织同心螺旋粗麻毛线纹理
+// 5. 地毯：分层编织同心螺旋粗麻毛线纹理（优化至 256x256 释放显存）
 function createRugTexture(baseColor, accentColor) {
-  return canvasTexture(512, 512, (ctx, w, h) => {
+  return canvasTexture(256, 256, (ctx, w, h) => {
     const cx = w / 2, cy = h / 2;
     ctx.fillStyle = baseColor; ctx.fillRect(0, 0, w, h);
-    for (let r = 10; r < cx; r += 6.5) {
+    for (let r = 8; r < cx; r += 5.5) {
       const circum = 2 * Math.PI * r;
-      const stitches = Math.floor(circum / 8.5);
+      const stitches = Math.floor(circum / 7.5);
       for (let s = 0; s < stitches; s++) {
         const a = (s / stitches) * Math.PI * 2;
         const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
         ctx.save();
         ctx.translate(x, y); ctx.rotate(a + Math.PI / 4);
         ctx.fillStyle = (s % 2 === 0) ? 'rgba(255,250,242,0.35)' : accentColor;
-        ctx.fillRect(-2, -1, 4, 2.5);
+        ctx.fillRect(-1.5, -0.8, 3, 2);
         ctx.restore();
       }
     }
@@ -198,7 +198,7 @@ const rugOuterTex = createRugTexture('#efa892', 'rgba(150,85,65,0.24)');
 const rugMidTex = createRugTexture('#f7edd9', 'rgba(180,140,110,0.18)');
 const rugInnerTex = createRugTexture('#e2947d', 'rgba(140,75,55,0.26)');
 
-// 6. 布料/被子：细腻华夫格织物感
+// 6. 布料/被子：细腻华夫格织物感（256x256）
 const fabricTex = canvasTexture(256, 256, (ctx, w, h) => {
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, w, h);
   ctx.strokeStyle = 'rgba(0,0,0,0.06)';
@@ -215,11 +215,11 @@ const fabricTex = canvasTexture(256, 256, (ctx, w, h) => {
 fabricTex.tex.wrapS = fabricTex.tex.wrapT = THREE.RepeatWrapping;
 fabricTex.tex.repeat.set(4, 4);
 
-// 7. 书脊贴图生成器（带日系治愈书名、烫金线条）
+// 7. 书脊贴图生成器（优化至 64x128，带日系治愈书名、烫金线条）
 const bookTexCache = {};
 function getBookSpineTexture(color) {
   if (bookTexCache[color]) return bookTexCache[color];
-  const texObj = canvasTexture(128, 256, (ctx, w, h) => {
+  const texObj = canvasTexture(64, 128, (ctx, w, h) => {
     ctx.fillStyle = color; ctx.fillRect(0, 0, w, h);
     const g = ctx.createLinearGradient(0, 0, w, 0);
     g.addColorStop(0, 'rgba(0,0,0,0.28)');
@@ -229,21 +229,21 @@ function getBookSpineTexture(color) {
     ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
 
     // 烫金边框与装饰线
-    ctx.strokeStyle = '#f8d67c'; ctx.lineWidth = 3;
-    ctx.strokeRect(10, 14, w - 20, h - 28);
+    ctx.strokeStyle = '#f8d67c'; ctx.lineWidth = 2;
+    ctx.strokeRect(5, 8, w - 10, h - 16);
     ctx.beginPath();
-    ctx.moveTo(10, 36); ctx.lineTo(w - 10, 36);
-    ctx.moveTo(10, h - 36); ctx.lineTo(w - 10, h - 36);
+    ctx.moveTo(5, 20); ctx.lineTo(w - 5, 20);
+    ctx.moveTo(5, h - 20); ctx.lineTo(w - 5, h - 20);
     ctx.stroke();
 
     ctx.fillStyle = '#fae19c';
-    ctx.beginPath(); ctx.arc(w / 2, 25, 4, 0, Math.PI * 2); ctx.fill();
-    ctx.beginPath(); ctx.arc(w / 2, h - 25, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w / 2, 14, 2.5, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(w / 2, h - 14, 2.5, 0, Math.PI * 2); ctx.fill();
 
     ctx.fillStyle = 'rgba(255,255,255,0.88)';
-    for (let y = 58; y < h - 58; y += 18) {
-      const barW = rand(26, w - 36);
-      ctx.fillRect((w - barW) / 2, y, barW, 8.5);
+    for (let y = 30; y < h - 30; y += 12) {
+      const barW = rand(14, w - 18);
+      ctx.fillRect((w - barW) / 2, y, barW, 5);
     }
   });
   bookTexCache[color] = texObj.tex;
@@ -409,6 +409,14 @@ function box(w, h, d, material, x, y, z, parent = scene) {
   // 墙壁不投射阴影，保证窗外直射阳光与月光能够穿透并在房间地板投影出清晰窗格
   const colStr = String(material).toLowerCase();
   if (colStr === '#f4e3cf' || colStr === '#f7ead9' || colStr === 'wall') {
+    mesh.castShadow = false;
+  }
+  // 书架内书脊与小件物品免投阴影（深处无外向明显阴影贡献），大幅节约阴影 pass draw calls
+  if (z < -4.5 && x < -1.5 && y > 0 && y < 3.2) {
+    mesh.castShadow = false;
+  }
+  // 紧贴墙壁的线条装饰免投阴影
+  if ((x <= -4.85 || z <= -4.85) && (w < 0.25 || d < 0.25)) {
     mesh.castShadow = false;
   }
   mesh.position.set(x, y + h / 2, z); parent.add(mesh); return mesh;
