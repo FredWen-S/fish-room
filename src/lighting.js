@@ -7,8 +7,8 @@ scene.add(new THREE.AmbientLight('#ffffff', 0.22));
 const hemi = new THREE.HemisphereLight('#fff6ea', '#bca896', 0.82);
 scene.add(hemi);
 
-// 主太阳光（日间主光源，温润日光与柔化阴影）
-const sun = new THREE.DirectionalLight('#fff7eb', 1.6);
+// 全局主太阳光（柔和漫射日光）
+const sun = new THREE.DirectionalLight('#fff7eb', 1.35);
 sun.position.set(7.5, 13, 8.5);
 sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -18,15 +18,67 @@ sun.shadow.normalBias = 0.025;
 Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
 scene.add(sun);
 
+// 窗外直射阳光与窗格投影（定向穿透窗户，在木地板上投射出清晰温暖的田字窗格阴影）
+const windowSun = new THREE.DirectionalLight('#fff5e0', 1.75);
+windowSun.position.set(-11, 8.2, -4.5);
+windowSun.castShadow = true;
+windowSun.shadow.mapSize.set(2048, 2048);
+windowSun.shadow.radius = 1.6;
+windowSun.shadow.bias = -0.0003;
+windowSun.shadow.normalBias = 0.02;
+Object.assign(windowSun.shadow.camera, {
+  left: -4.2, right: 4.2, top: 4.2, bottom: -4.2, near: 1, far: 30,
+});
+const sunTarget = new THREE.Object3D();
+sunTarget.position.set(-1.2, 0, 0);
+scene.add(sunTarget);
+windowSun.target = sunTarget;
+scene.add(windowSun);
+
+// 窗户反光玻璃面（半透明物理反射，带微斜向高光拉丝感）
+const glassGeo = new THREE.PlaneGeometry(2.18, 1.78);
+const glassCanvas = document.createElement('canvas'); glassCanvas.width = 256; glassCanvas.height = 256;
+const gctx = glassCanvas.getContext('2d');
+gctx.fillStyle = 'rgba(255, 255, 255, 0.03)'; gctx.fillRect(0, 0, 256, 256);
+const glG = gctx.createLinearGradient(0, 0, 256, 256);
+glG.addColorStop(0, 'rgba(255,255,255,0)');
+glG.addColorStop(0.38, 'rgba(255,255,255,0.18)');
+glG.addColorStop(0.46, 'rgba(255,255,255,0.30)');
+glG.addColorStop(0.54, 'rgba(255,255,255,0)');
+glG.addColorStop(0.70, 'rgba(255,255,255,0.14)');
+glG.addColorStop(0.76, 'rgba(255,255,255,0)');
+gctx.fillStyle = glG; gctx.fillRect(0, 0, 256, 256);
+const glassTex = new THREE.CanvasTexture(glassCanvas);
+glassTex.colorSpace = THREE.SRGBColorSpace;
+const glassMat = new THREE.MeshStandardMaterial({
+  color: '#ffffff',
+  map: glassTex,
+  transparent: true,
+  opacity: 0.38,
+  roughness: 0.08,
+  metalness: 0.12,
+  side: THREE.DoubleSide,
+  depthWrite: false,
+});
+const glassPane = new THREE.Mesh(glassGeo, glassMat);
+glassPane.rotation.y = Math.PI / 2;
+glassPane.position.set(-4.94, 2.65, -2.0);
+scene.add(glassPane);
+
 // 窗外夜间月光柔和漫射（静谧冷蓝，投射在地板与窗台）
 const moon = new THREE.DirectionalLight('#4d6da6', 0);
-moon.position.set(-8, 7.5, -2);
+moon.position.set(-9, 7, -3.5);
 scene.add(moon);
 
 // 夜间落地灯温暖漫反射光（照亮地毯与床边，营造治愈温馨氛围）
 const lampBounce = new THREE.PointLight('#ffa048', 0, 7.5, 1.6);
 lampBounce.position.set(-2.8, 1.25, 0.4);
 scene.add(lampBounce);
+
+// 墙上串灯暖色点光源（夜间点缀墙面与书架上方，带来星星点点的温暖光晕）
+const fairyLight = new THREE.PointLight('#ffba58', 0, 6.5, 1.8);
+fairyLight.position.set(-0.5, 4.15, -4.6);
+scene.add(fairyLight);
 
 // ACES Filmic Tone Mapping 渲染钩子
 scene.onBeforeRender = (renderer) => {
@@ -110,14 +162,16 @@ function drawSky() {
   sky.tex.needsUpdate = true;
 }
 
-const light = { sun: 1.6, hemi: 0.82, lamp: 0, fairy: 0 };
+const light = { sun: 1.35, hemi: 0.82, lamp: 0, fairy: 0 };
 function lightTargets() {
   const d = daylight(), resting = room().state === 'resting';
-  // 动态联动窗外月光与落地灯漫射
+  // 动态联动窗外阳光窗格投影、月光、落地灯与串灯漫射
+  windowSun.intensity = d * 1.75 * (resting ? 0.6 : 1);
   moon.intensity = (1 - d) * 0.48 * (resting ? 0.6 : 1);
   lampBounce.intensity = (1 - d) * 1.35 * (resting ? 0.65 : 1);
+  fairyLight.intensity = Math.max(1 - d, resting ? 0.85 : 0) * 1.8;
   return {
-    sun: (0.16 + 1.44 * d) * (resting ? 0.52 : 1),
+    sun: (0.16 + 1.25 * d) * (resting ? 0.52 : 1),
     hemi: (0.36 + 0.46 * d) * (resting ? 0.6 : 1),
     lamp: resting ? 2.8 : (1 - d) * 3.4,
     fairy: Math.max(1 - d, resting ? 0.85 : 0),
@@ -130,4 +184,5 @@ function applyDayClass() {
 
 return { sun, hemi, daylight, drawSky, light, lightTargets, applyDayClass };
 }
+
 
