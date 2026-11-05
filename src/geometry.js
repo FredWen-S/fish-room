@@ -1,6 +1,28 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
+// Keep high-DPI displays from multiplying fragment work by four. Adjust only
+// drawing-buffer resolution; CSS layout, camera and character logic are unchanged.
+export function createResolutionController(renderer) {
+  const maximum = Math.min(devicePixelRatio, 1.5);
+  renderer.setPixelRatio(maximum);
+  let previous = 0, total = 0, count = 0, cooldown = 0;
+  return timestamp => {
+    const elapsed = timestamp - previous;
+    previous = timestamp;
+    if (document.hidden || elapsed <= 0 || elapsed > 100) { total = count = 0; return; }
+    total += elapsed; count++;
+    if (total < 1500) return;
+    const average = total / count;
+    total = count = 0;
+    if (timestamp < cooldown) return;
+    const current = renderer.getPixelRatio();
+    const next = average > 17.8 ? Math.max(0.75, current - 0.125)
+      : average < 12.5 ? Math.min(maximum, current + 0.125) : current;
+    if (next !== current) { renderer.setPixelRatio(next); cooldown = timestamp + 3000; }
+  };
+}
+
 // Bake only static room meshes. Animated leaves, lamp shade and instanced lights
 // retain their original objects and materials for the existing animation loop.
 export function batchStaticRoom(scene, excluded) {

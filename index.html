@@ -153,7 +153,7 @@ import { createMaterials } from './src/materials.js';
 import { createRoom } from './src/room.js';
 import { createFurniture } from './src/furniture.js';
 import { createLighting } from './src/lighting.js';
-import { batchStaticRoom } from './src/geometry.js';
+import { batchStaticRoom, createResolutionController } from './src/geometry.js';
 const V3 = THREE.Vector3;
 const $ = (id) => document.getElementById(id);
 
@@ -169,7 +169,7 @@ const SOURCES = { astrbot: 'QQ 大肥鱼', room: '小房间', demo: '演示', 'r
 
 // ------------------------------------------------------------------ 渲染器与相机
 const renderer = new THREE.WebGLRenderer({ canvas: $('scene'), antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const updateResolution = createResolutionController(renderer);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -1037,7 +1037,8 @@ function step(dt) {
   if (room.state === 'resting' && W.arrived && W.spot === 'bed' && t - lastZ > 1.1) { spawnZ(); lastZ = t; }
   if (room.state === 'idle' && W.arrived && t - lastBubble > 4.5) { if (Math.random() < 0.5) spawnBubble(); lastBubble = t; }
 }
-function frame() {
+function frame(timestamp) {
+  updateResolution(timestamp);
   step(Math.min(realClock.getDelta(), 0.05));
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
