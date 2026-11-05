@@ -1,0 +1,57 @@
+{
+  "fps": 19.919740849973408,
+  "low1": 2.7901785714285885,
+  "frameMs": {
+    "p50": 8.700000000000728,
+    "p95": 249.90000000000146,
+    "p99": 358.3999999999978,
+    "max": 474.59999999999854
+  },
+  "pixelRatio": 1,
+  "pixelRatioRange": [
+    1,
+    1
+  ],
+  "screenDpr": 1,
+  "viewport": [
+    1280,
+    800
+  ],
+  "buffer": [
+    1280,
+    800
+  ],
+  "drawCalls": [
+    144,
+    145
+  ],
+  "frames": 207,
+  "seconds": 10.3415,
+  "visibility": "visible",
+  "hasFocus": true,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 130T GPU (16GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "url": "http://127.0.0.1:18776/?hour=22&debug",
+  "version": "original",
+  "foregroundBefore": 10164296,
+  "foregroundAfter": 10164296,
+  "events": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "timestamp": 1793864041184.348,
+          "url": "http://127.0.0.1:18776/favicon.ico",
+          "networkRequestId": "2324.41"
+        }
+      }
+    }
+  ],
+  "baselineNightOverride": true,
+  "viewportMode": "CDP device metrics 1280x800 at DPR 1; headed foreground Chrome",
+  "recordedAt": "2026-11-05T07:42:37.367906+00:00",
+  "sourceCommit": "033b9ec"
+}

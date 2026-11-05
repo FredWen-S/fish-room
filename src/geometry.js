@@ -3,6 +3,8 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 // Keep high-DPI displays from multiplying fragment work by four. Adjust only
 // drawing-buffer resolution; CSS layout, camera and character logic are unchanged.
+// Never undersample native CSS pixels: a host frame-rate cap is not evidence
+// that reducing scene resolution will help.
 export function createResolutionController(renderer) {
   const maximum = Math.max(1, Math.min(devicePixelRatio, 1.5));
   renderer.setPixelRatio(maximum);
