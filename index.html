@@ -176,6 +176,11 @@ const renderer = new THREE.WebGLRenderer({ canvas: $('scene'), antialias: true, 
 const updateResolution = createResolutionController(renderer);
 renderer.shadowMap.enabled = !perfFlags.has('noshadow');
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+// The room and shadow-casting lights have fixed transforms. Reuse their maps
+// until an animation can move a caster; ?liveshadow retains the old behavior
+// for comparisons. Intensity, sky, clock and screen updates do not move casters.
+renderer.shadowMap.autoUpdate = perfFlags.has('liveshadow');
+renderer.shadowMap.needsUpdate = true;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
@@ -1020,6 +1025,7 @@ document.querySelectorAll('[data-play]').forEach((btn) => btn.addEventListener('
 // ------------------------------------------------------------------ 主循环
 const realClock = new THREE.Clock(), clock = { elapsedTime: 0 };   // clock 是动画时间，可以手动快进
 let lastScreen = 0, lastClock = -1, lastZ = 0, lastBubble = 0, lastSky = -1;
+let hadAnimatedShadows = false;
 function step(dt) {
   clock.elapsedTime += dt; const t = clock.elapsedTime;
   updateChar(dt, t); updateParticles(dt); bubble.tick();
@@ -1043,6 +1049,12 @@ function step(dt) {
   }
   if (room.state === 'resting' && W.arrived && W.spot === 'bed' && t - lastZ > 1.1) { spawnZ(); lastZ = t; }
   if (room.state === 'idle' && W.arrived && t - lastBubble > 4.5) { if (Math.random() < 0.5) spawnBubble(); lastBubble = t; }
+  // Particle groups include shadow-casting envelopes. Invalidate conservatively
+  // for every particle animation, including its final removal, and plant bounce.
+  // Keep this in step() so the debug run() path follows the same rule.
+  const animatedShadows = plantBounce > 0 || particles.length > 0;
+  if (animatedShadows || hadAnimatedShadows) renderer.shadowMap.needsUpdate = true;
+  hadAnimatedShadows = animatedShadows;
 }
 function frame(timestamp) {
   updateResolution(timestamp);
