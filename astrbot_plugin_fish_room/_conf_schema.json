@@ -1,0 +1,6 @@
+{
+  "enable": {"type": "bool", "description": "上报到小房间", "default": true},
+  "room_url": {"type": "string", "description": "小房间地址（AstrBot 在 Docker 里时用 host.docker.internal）", "default": "http://host.docker.internal:18765"},
+  "token": {"type": "string", "description": "小房间 config.json 里的 event_token", "default": ""},
+  "show_text": {"type": "bool", "description": "在小房间里显示消息内容（关掉只显示“一条消息”）", "default": true}
+}

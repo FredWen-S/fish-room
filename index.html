@@ -1,0 +1,1253 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>大肥鱼的小房间</title>
+<style>
+  :root {
+    --bg-a: #fde9da; --bg-b: #f3cdb9;
+    --card: rgba(255, 251, 245, 0.86); --card-line: rgba(120, 90, 70, 0.14);
+    --ink: #3b3446; --ink-soft: #7a6f80; --accent: #4f6df5;
+    --shadow: 0 10px 30px rgba(90, 60, 50, 0.14);
+  }
+  body.night {
+    --bg-a: #26305a; --bg-b: #0f1429;
+    --card: rgba(28, 33, 60, 0.82); --card-line: rgba(200, 210, 255, 0.12);
+    --ink: #e8e8f6; --ink-soft: #a3a6c6; --accent: #8ea2ff;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+    color: var(--ink);
+    background: radial-gradient(120% 90% at 30% 35%, var(--bg-a), var(--bg-b));
+    transition: background 2s;
+  }
+  #scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .card {
+    position: fixed; background: var(--card); border: 1px solid var(--card-line);
+    border-radius: 18px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  /* 状态卡 */
+  .status { top: 16px; left: 16px; width: min(340px, calc(100% - 32px)); padding: 16px 18px 14px; }
+  .status h1 { margin: 0 0 10px; font-size: 17px; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
+  .status h1 small { font-size: 12px; font-weight: 400; color: var(--ink-soft); }
+  .now { display: flex; align-items: center; gap: 10px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px 4px 9px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; color: #fff; background: var(--state, #7bbf8e);
+    transition: background .4s; white-space: nowrap;
+  }
+  .chip .pulse { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .35; transform: scale(.7); } }
+  .detail { font-size: 14px; line-height: 1.45; }
+  .meta { margin-top: 8px; font-size: 12px; color: var(--ink-soft); display: flex; gap: 10px; flex-wrap: wrap; }
+  .demo { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--card-line); display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .demo span { font-size: 12px; color: var(--ink-soft); margin-right: 2px; }
+  .demo button {
+    font: inherit; font-size: 12px; padding: 4px 9px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--card-line); background: transparent; color: var(--ink);
+  }
+  .demo button:hover { border-color: var(--accent); color: var(--accent); }
+  .demo + .demo { margin-top: 8px; padding-top: 0; border-top: 0; }
+  .demo .tip { flex-basis: 100%; margin-top: 2px; font-size: 11px; }
+
+  /* 动态 */
+  .feed { top: 16px; right: 16px; width: 310px; bottom: 88px; padding: 14px 6px 10px 16px; display: flex; flex-direction: column; }
+  .feed h2 { margin: 0 0 8px; font-size: 14px; display: flex; justify-content: space-between; padding-right: 10px; }
+  .feed h2 span { font-weight: 400; color: var(--ink-soft); font-size: 12px; }
+  #feed { list-style: none; margin: 0; padding: 0 10px 0 0; overflow-y: auto; flex: 1; }
+  #feed li { font-size: 13px; line-height: 1.45; padding: 7px 0; border-bottom: 1px solid var(--card-line); display: grid; grid-template-columns: 42px 1fr; gap: 4px; animation: slide .35s ease-out; }
+  #feed li time { color: var(--ink-soft); font-size: 11px; padding-top: 2px; font-variant-numeric: tabular-nums; }
+  #feed li .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+  #feed li.msg_in b, #feed li.msg_out b { font-weight: 600; }
+  #feed li.log { color: var(--ink-soft); }
+  #feed li .txt { word-break: break-word; }
+  @keyframes slide { from { opacity: 0; transform: translateY(-6px); } }
+
+  /* 底部 */
+  .chatbar { left: 50%; transform: translateX(-50%); bottom: 16px; width: min(560px, calc(100% - 32px)); padding: 6px; display: flex; gap: 6px; }
+  .chatbar input {
+    flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 10px 14px; border: 0; outline: 0;
+    background: transparent; color: var(--ink);
+  }
+  .chatbar input::placeholder { color: var(--ink-soft); }
+  .chatbar button {
+    font: inherit; font-size: 14px; font-weight: 600; padding: 0 18px; border: 0; border-radius: 12px;
+    background: var(--accent); color: #fff; cursor: pointer;
+  }
+  .chatbar button:disabled { opacity: .5; cursor: wait; }
+  .stats { position: fixed; left: 18px; bottom: 26px; font-size: 12px; color: var(--ink-soft); max-width: calc(50% - 300px); }
+
+  /* 头顶气泡 */
+  .bubble {
+    position: fixed; left: 0; top: 0; transform: translate(-50%, -100%); pointer-events: none;
+    max-width: 270px; padding: 9px 13px; border-radius: 14px; font-size: 14px; line-height: 1.5;
+    background: #fff; color: #333; box-shadow: 0 6px 18px rgba(40, 30, 60, .18);
+    transition: opacity .3s; white-space: pre-wrap; word-break: break-word;
+  }
+  .bubble::after { content: ""; position: absolute; left: 50%; bottom: -7px; margin-left: -7px; border: 7px solid transparent; border-bottom: 0; border-top-color: #fff; }
+  .bubble.hidden { opacity: 0; }
+  .bubble .dots i { display: inline-block; width: 6px; height: 6px; margin: 0 2px; border-radius: 50%; background: #9aa3c7; animation: hop 1s infinite; }
+  .bubble .dots i:nth-child(2) { animation-delay: .15s; } .bubble .dots i:nth-child(3) { animation-delay: .3s; }
+  @keyframes hop { 30% { transform: translateY(-5px); background: var(--accent); } }
+
+  .banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); padding: 8px 14px; border-radius: 10px; background: #2b2b3a; color: #fff; font-size: 13px; z-index: 5; }
+  .banner.hidden { display: none; }
+
+  @media (max-width: 860px) {
+    .feed { top: auto; left: 16px; right: 16px; width: auto; bottom: 76px; height: 27vh; }
+    .stats { display: none; }
+    .status { padding: 12px 14px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="scene"></canvas>
+<div id="bubble" class="bubble hidden"></div>
+
+<section class="card status">
+  <h1>🐳 大肥鱼的小房间 <small id="clock"></small></h1>
+  <div class="now">
+    <span class="chip" id="chip"><span class="pulse"></span><span id="chipText">闲逛</span></span>
+    <span class="detail" id="detail">在房间里闲逛</span>
+  </div>
+  <div class="meta"><span id="since">刚刚开始</span><span id="source"></span><span id="act">动作：站着</span></div>
+  <div class="demo">
+    <span>演示</span>
+    <button data-demo="working">工作</button>
+    <button data-demo="qq">来条 QQ 消息</button>
+    <button data-demo="resting">休息</button>
+    <button data-demo="idle">闲逛</button>
+    <button data-demo="error">出错</button>
+  </div>
+  <div class="demo">
+    <span>互动</span>
+    <button data-play="snack">喂小鱼干</button>
+    <button data-play="dance">跳个舞</button>
+    <button data-play="twirl">转个圈</button>
+    <span class="tip">还可以摸头、戳她、把她拎起来</span>
+  </div>
+</section>
+
+<aside class="card feed">
+  <h2>它在干什么 <span id="conn">连接中…</span></h2>
+  <ol id="feed"></ol>
+</aside>
+
+<div class="stats" id="stats"></div>
+<form class="card chatbar" id="chat">
+  <input id="msg" placeholder="和大肥鱼说点什么…" autocomplete="off" maxlength="2000">
+  <button id="send">发送</button>
+</form>
+<div class="banner hidden" id="banner"></div>
+
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+<script type="module">
+import * as THREE from 'three';
+const V3 = THREE.Vector3;
+const $ = (id) => document.getElementById(id);
+
+const STATES = {
+  idle:     { label: '闲逛',   color: '#6fb487' },
+  thinking: { label: '思考中', color: '#e2a935' },
+  replying: { label: '回消息', color: '#4f6df5' },
+  working:  { label: '工作中', color: '#e57f4f' },
+  resting:  { label: '休息',   color: '#9583d3' },
+  error:    { label: '出错了', color: '#d9534f' },
+};
+const SOURCES = { astrbot: 'QQ 大肥鱼', room: '小房间', demo: '演示', 'room-timer': '它自己', agent: '外部 agent' };
+
+// ------------------------------------------------------------------ 渲染器与相机
+const renderer = new THREE.WebGLRenderer({ canvas: $('scene'), antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100);
+camera.position.set(13, 11.5, 13);
+camera.lookAt(-0.3, 1.5, -0.3);
+
+function resize() {
+  const w = innerWidth, h = innerHeight, aspect = w / h;
+  renderer.setSize(w, h, false);
+  const wide = w > 860;
+  const view = Math.max(6.3, 8.4 / aspect);
+  const offsetX = wide ? view * aspect * 0.12 : 0;
+  const offsetY = wide ? -0.3 : -view * 0.28;
+  camera.left = -view * aspect + offsetX; camera.right = view * aspect + offsetX;
+  camera.top = view + offsetY; camera.bottom = -view + offsetY;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', resize); resize();
+
+// ------------------------------------------------------------------ 小工具
+const mat = (color, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness: 0.85, metalness: 0, ...extra });
+function shade(mesh) { mesh.castShadow = true; mesh.receiveShadow = true; return mesh; }
+function box(w, h, d, material, x, y, z, parent = scene) {
+  const mesh = shade(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), material instanceof THREE.Material ? material : mat(material)));
+  mesh.position.set(x, y + h / 2, z); parent.add(mesh); return mesh;
+}
+function cyl(rt, rb, h, material, x, y, z, seg = 24) {
+  const mesh = shade(new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), material instanceof THREE.Material ? material : mat(material)));
+  mesh.position.set(x, y + h / 2, z); scene.add(mesh); return mesh;
+}
+function blob(r, color, sx, sy, sz, x, y, z, parent = scene, material) {
+  const mesh = shade(new THREE.Mesh(new THREE.SphereGeometry(r, 28, 20), material || mat(color)));
+  mesh.scale.set(sx, sy, sz); mesh.position.set(x, y, z); parent.add(mesh); return mesh;
+}
+function canvasTexture(w, h, draw) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  const ctx = c.getContext('2d'); draw(ctx, w, h);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+  return { tex, ctx, canvas: c };
+}
+function wrapText(ctx, text, maxWidth) {
+  const lines = []; let line = '';
+  for (const ch of String(text)) {
+    if (ch === '\n') { lines.push(line); line = ''; continue; }
+    if (ctx.measureText(line + ch).width > maxWidth && line) { lines.push(line); line = ch; } else line += ch;
+  }
+  lines.push(line); return lines;
+}
+const lerpAngle = (a, b, t) => a + ((((b - a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI) * t;
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+const hhmm = (ts) => new Date(ts * 1000).toTimeString().slice(0, 5);
+
+// ------------------------------------------------------------------ 房间
+const floorTex = canvasTexture(512, 512, (ctx, w, h) => {
+  const tones = ['#d9a878', '#d29f6f', '#dcae80', '#cf9a69'];
+  for (let row = 0; row < 8; row++) {
+    let x = row % 2 ? -90 : 0;
+    while (x < w) {
+      const len = rand(150, 260);
+      ctx.fillStyle = pick(tones); ctx.fillRect(x, row * 64, len, 64);
+      ctx.fillStyle = 'rgba(90,50,20,.18)'; ctx.fillRect(x, row * 64, 2, 64);
+      x += len;
+    }
+    ctx.fillStyle = 'rgba(90,50,20,.22)'; ctx.fillRect(0, row * 64, w, 2);
+  }
+});
+floorTex.tex.wrapS = floorTex.tex.wrapT = THREE.RepeatWrapping; floorTex.tex.repeat.set(2, 2);
+box(10, 0.3, 10, mat('#ffffff', { map: floorTex.tex }), 0, -0.3, 0);
+box(0.3, 5.2, 10.3, '#f4e3cf', -5.15, -0.3, -0.15);   // 左墙
+box(10.3, 5.2, 0.3, '#f7ead9', -0.15, -0.3, -5.15);   // 后墙
+box(0.06, 1.25, 10, '#b9cfc0', -4.99, 0, 0);          // 护墙板
+box(10, 1.25, 0.06, '#c3d6c8', 0, 0, -4.99);
+box(0.1, 0.08, 10, '#fdf8f1', -4.96, 1.25, 0);
+box(10, 0.08, 0.1, '#fdf8f1', 0, 1.25, -4.96);
+
+// 窗户（左墙）
+const sky = canvasTexture(256, 210, () => {});
+const skyPlane = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.8), new THREE.MeshBasicMaterial({ map: sky.tex, toneMapped: false }));
+skyPlane.rotation.y = Math.PI / 2; skyPlane.position.set(-4.965, 2.65, -2.0); scene.add(skyPlane);
+const frameColor = '#fffaf2';
+box(0.14, 0.12, 2.42, frameColor, -4.93, 3.55, -2.0); box(0.14, 0.12, 2.42, frameColor, -4.93, 1.63, -2.0);
+box(0.14, 1.92, 0.12, frameColor, -4.93, 1.69, -3.15); box(0.14, 1.92, 0.12, frameColor, -4.93, 1.69, -0.85);
+box(0.1, 1.8, 0.06, frameColor, -4.94, 1.75, -2.0); box(0.1, 0.06, 2.2, frameColor, -4.94, 2.62, -2.0);
+box(0.42, 0.07, 2.7, frameColor, -4.82, 1.58, -2.0);
+box(0.08, 2.5, 0.55, '#e98f7c', -4.88, 1.3, -3.55); box(0.08, 2.5, 0.55, '#e98f7c', -4.88, 1.3, -0.45);
+box(0.1, 0.06, 3.4, '#9b7a5a', -4.9, 3.85, -2.0);
+const pot1 = cyl(0.13, 0.1, 0.18, '#d7775c', -4.75, 1.65, -1.3);
+blob(0.16, '#6aa36f', 1, 0.9, 1, -4.75, 1.98, -1.3);
+
+// 书架（后墙）
+const wood = '#b98457', woodDark = '#9c6a43';
+box(1.8, 2.6, 0.06, woodDark, -2.4, 0, -4.95);
+box(0.08, 2.6, 0.55, wood, -3.26, 0, -4.7); box(0.08, 2.6, 0.55, wood, -1.54, 0, -4.7);
+const bookColors = ['#e8735a', '#f2b84b', '#5f8fd8', '#7cbf8e', '#a37ad6', '#f29fb5', '#4fb3b0', '#efe1c6'];
+[0.02, 0.66, 1.3, 1.94, 2.55].forEach((y, row) => {
+  box(1.74, 0.06, 0.55, wood, -2.4, y, -4.7);
+  if (row === 4) return;
+  let x = -3.18;
+  while (x < -1.7) {
+    const bw = rand(0.09, 0.17), bh = rand(0.34, 0.52);
+    if (x + bw > -1.62) break;
+    const book = box(bw, bh, rand(0.32, 0.42), pick(bookColors), x + bw / 2, y + 0.06, -4.72);
+    if (Math.random() < 0.12) { book.rotation.z = -0.18; x += 0.05; }
+    x += bw + 0.012;
+  }
+});
+const globe = blob(0.2, '#7fc7e8', 1, 1, 1, -2.0, 2.82, -4.7, scene, mat('#7fc7e8', { roughness: 0.4 }));
+cyl(0.08, 0.12, 0.06, woodDark, -2.0, 2.61, -4.7);
+
+// 海报
+const poster = canvasTexture(256, 200, (ctx, w, h) => {
+  const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#bfe6f5'); g.addColorStop(1, '#4f8fd0');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#ffffff99';
+  for (let i = 0; i < 3; i++) { ctx.beginPath(); for (let x = 0; x <= w; x += 8) ctx.lineTo(x, 120 + i * 26 + Math.sin(x / 22 + i) * 6); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill(); }
+  ctx.fillStyle = '#3f5fe0'; ctx.beginPath(); ctx.ellipse(128, 86, 52, 30, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(78, 86); ctx.lineTo(48, 66); ctx.lineTo(56, 104); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(150, 80, 5, 0, 7); ctx.fill();
+  ctx.font = 'bold 22px "Microsoft YaHei", sans-serif'; ctx.fillStyle = '#fff'; ctx.fillText('去大海', 18, 34);
+});
+box(1.36, 1.06, 0.05, '#fffaf2', -0.1, 2.75, -4.98);
+const posterMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.24, 0.96), mat('#fff', { map: poster.tex }));
+posterMesh.position.set(-0.1, 3.28, -4.945); scene.add(posterMesh);
+
+// 墙上的钟
+const clockTex = canvasTexture(256, 256, () => {});
+const clockRim = new THREE.Mesh(new THREE.CylinderGeometry(0.48, 0.48, 0.08, 40), mat('#e98f7c'));
+clockRim.rotation.x = Math.PI / 2; clockRim.position.set(3.7, 3.45, -4.96); scene.add(clockRim);
+const clockFace = new THREE.Mesh(new THREE.CircleGeometry(0.42, 40), new THREE.MeshBasicMaterial({ map: clockTex.tex }));
+clockFace.position.set(3.7, 3.45, -4.91); scene.add(clockFace);
+function drawClock() {
+  const { ctx } = clockTex, now = new Date();
+  ctx.fillStyle = '#fffaf2'; ctx.fillRect(0, 0, 256, 256);
+  ctx.fillStyle = '#3b3446';
+  for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; ctx.beginPath(); ctx.arc(128 + Math.sin(a) * 100, 128 - Math.cos(a) * 100, i % 3 ? 4 : 7, 0, 7); ctx.fill(); }
+  const hand = (angle, len, width, color) => { ctx.strokeStyle = color; ctx.lineWidth = width; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(128, 128); ctx.lineTo(128 + Math.sin(angle) * len, 128 - Math.cos(angle) * len); ctx.stroke(); };
+  const h = now.getHours() % 12 + now.getMinutes() / 60, m = now.getMinutes() + now.getSeconds() / 60;
+  hand(h / 12 * Math.PI * 2, 55, 10, '#3b3446'); hand(m / 60 * Math.PI * 2, 82, 6, '#3b3446');
+  hand(now.getSeconds() / 60 * Math.PI * 2, 88, 2, '#e8735a');
+  clockTex.tex.needsUpdate = true;
+}
+
+// 书桌、电脑、凳子
+box(2.8, 0.1, 1.25, wood, 1.4, 0.95, -4.25);
+[[0.1, -3.7], [2.7, -3.7], [0.1, -4.8], [2.7, -4.8]].forEach(([x, z]) => box(0.1, 0.95, 0.1, woodDark, x, 0, z));
+box(0.8, 0.45, 1.1, '#c99a6c', 2.25, 0.5, -4.25);
+box(0.22, 0.05, 0.04, '#fffaf2', 2.25, 0.7, -3.68);
+box(0.5, 0.04, 0.3, '#3a3a48', 1.4, 1.05, -4.55);
+box(0.1, 0.32, 0.1, '#3a3a48', 1.4, 1.05, -4.6);
+box(1.52, 0.97, 0.07, '#2c2c38', 1.4, 1.36, -4.62);
+const screen = canvasTexture(512, 320, () => {});
+const screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.86), new THREE.MeshBasicMaterial({ map: screen.tex, toneMapped: false }));
+screenMesh.position.set(1.4, 1.845, -4.58); scene.add(screenMesh);
+const screenGlow = new THREE.PointLight('#9fb6ff', 0, 3.2); screenGlow.position.set(1.4, 1.8, -4.1); scene.add(screenGlow);
+box(0.95, 0.04, 0.32, '#ece6dc', 1.3, 1.05, -3.95);
+box(0.14, 0.04, 0.2, '#ece6dc', 2.05, 1.05, -3.95);
+cyl(0.1, 0.09, 0.2, '#f2b84b', 2.5, 1.05, -4.0);
+box(0.25, 0.01, 0.25, '#ffe27a', 0.45, 1.05, -3.95).rotation.y = 0.3;
+
+// 床
+box(1.9, 0.38, 3.0, wood, -3.95, 0, 2.0);
+box(1.9, 1.15, 0.12, woodDark, -3.95, 0, 0.5);
+box(1.8, 0.26, 2.85, '#f8f3ea', -3.95, 0.38, 2.05);
+const pillow = blob(0.5, '#ffffff', 1.25, 0.28, 0.55, -3.95, 0.74, 0.95);
+box(1.86, 0.09, 1.75, '#8fb0f0', -3.95, 0.6, 2.6);
+box(1.88, 0.03, 0.12, '#ffffff', -3.95, 0.69, 1.78);
+
+// 落地灯
+cyl(0.3, 0.32, 0.05, '#3a3a48', -4.35, 0, -0.05);
+cyl(0.03, 0.03, 1.8, '#3a3a48', -4.35, 0.05, -0.05);
+const shadeMat = mat('#fff1d6', { emissive: '#ffcf86', emissiveIntensity: 0 });
+const lampShade = cyl(0.22, 0.38, 0.45, shadeMat, -4.35, 1.75, -0.05);
+lampShade.castShadow = false;
+const lampLight = new THREE.PointLight('#ffc477', 0, 8, 1.4); lampLight.position.set(-4.35, 1.85, -0.05); scene.add(lampLight);
+
+// 地毯、懒人沙发、植物
+cyl(2.15, 2.15, 0.03, '#f0c4a8', 0.6, 0, 1.3, 48).castShadow = false;
+cyl(1.6, 1.6, 0.035, '#f7dcc6', 0.6, 0, 1.3, 48).castShadow = false;
+cyl(0.9, 0.9, 0.04, '#eaa98c', 0.6, 0, 1.3, 48).castShadow = false;
+blob(1, '#f2b84b', 0.95, 0.45, 0.95, -2.9, 0.42, -1.3);
+cyl(0.36, 0.27, 0.62, '#e8735a', 4.25, 0, -4.25);
+const plantLeaves = [];
+for (let i = 0; i < 7; i++) {
+  const a = i / 7 * Math.PI * 2;
+  const leaf = blob(0.5, i % 2 ? '#6aa36f' : '#5b9461', 0.22, 0.85, 0.12, 4.25 + Math.cos(a) * 0.22, 1.25, -4.25 + Math.sin(a) * 0.22);
+  leaf.rotation.set(Math.sin(a) * 0.5, -a, Math.cos(a) * 0.5);
+  plantLeaves.push(leaf);
+}
+
+// 墙上的串灯
+const fairy = [];
+for (let i = 0; i < 16; i++) {
+  const t = i / 15, x = -4.6 + t * 9.2, y = 4.35 - Math.sin(t * Math.PI * 3) ** 2 * 0.25;
+  const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), new THREE.MeshBasicMaterial({ color: '#d8c7a6' }));
+  bulb.position.set(x, y, -4.92); scene.add(bulb); fairy.push(bulb);
+}
+
+// ------------------------------------------------------------------ 光照与时间
+scene.add(new THREE.AmbientLight('#ffffff', 0.25));
+const hemi = new THREE.HemisphereLight('#fff6ea', '#b29a86', 0.8); scene.add(hemi);
+const sun = new THREE.DirectionalLight('#fff1dc', 1.5);
+sun.position.set(7, 13, 9); sun.castShadow = true;
+sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0005; sun.shadow.normalBias = 0.02;
+Object.assign(sun.shadow.camera, { left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40 });
+scene.add(sun);
+
+function daylight(date = new Date()) {
+  const h = date.getHours() + date.getMinutes() / 60;
+  const ramp = (a, b) => Math.min(1, Math.max(0, (h - a) / (b - a)));
+  return Math.min(ramp(5.5, 8), 1 - ramp(17, 19.5));
+}
+function drawSky() {
+  const { ctx } = sky, w = 256, h = 210, d = daylight(), hour = new Date().getHours();
+  const dusk = d > 0 && d < 1;
+  const g = ctx.createLinearGradient(0, 0, 0, h);
+  if (d >= 1) { g.addColorStop(0, '#78c6f5'); g.addColorStop(1, '#d9f1ff'); }
+  else if (dusk) { g.addColorStop(0, hour < 12 ? '#9cc7f0' : '#6d6fc4'); g.addColorStop(1, '#ffb38a'); }
+  else { g.addColorStop(0, '#0d1638'); g.addColorStop(1, '#2b3270'); }
+  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+  if (d < 0.5) {
+    ctx.fillStyle = '#fff';
+    for (let i = 0; i < 40; i++) { ctx.globalAlpha = rand(0.3, 1); ctx.fillRect((i * 97) % w, (i * 53) % (h * 0.8), 2, 2); }
+    ctx.globalAlpha = 1; ctx.fillStyle = '#fdf3c4'; ctx.beginPath(); ctx.arc(190, 52, 22, 0, 7); ctx.fill();
+    ctx.fillStyle = '#1c2452'; ctx.beginPath(); ctx.arc(201, 45, 19, 0, 7); ctx.fill();
+  } else {
+    ctx.fillStyle = dusk ? '#ffd08a' : '#fff4b8'; ctx.beginPath(); ctx.arc(dusk ? 60 : 196, dusk ? 150 : 50, 24, 0, 7); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.85)';
+    [[60, 60], [150, 110]].forEach(([x, y]) => { ctx.beginPath(); ctx.arc(x, y, 16, 0, 7); ctx.arc(x + 20, y - 8, 20, 0, 7); ctx.arc(x + 42, y, 15, 0, 7); ctx.fill(); });
+  }
+  ctx.fillStyle = d < 0.5 ? '#141a3a' : '#7fb08a';
+  ctx.beginPath(); ctx.moveTo(0, h); for (let x = 0; x <= w; x += 16) ctx.lineTo(x, h - 28 - Math.sin(x / 30) * 10); ctx.lineTo(w, h); ctx.fill();
+  if (d < 0.5) { ctx.fillStyle = '#ffd36b'; [[30, 185], [90, 190], [170, 183], [220, 192]].forEach(([x, y]) => ctx.fillRect(x, y, 5, 5)); }
+  sky.tex.needsUpdate = true;
+}
+const light = { sun: 1.5, hemi: 0.8, lamp: 0, fairy: 0 };
+function lightTargets() {
+  const d = daylight(), resting = room.state === 'resting';
+  return {
+    sun: (0.25 + 1.35 * d) * (resting ? 0.55 : 1),
+    hemi: (0.3 + 0.55 * d) * (resting ? 0.6 : 1),
+    lamp: resting ? 2.6 : (1 - d) * 3.2,
+    fairy: Math.max(1 - d, resting ? 0.8 : 0),
+  };
+}
+function applyDayClass() { document.body.classList.toggle('night', daylight() < 0.4); }
+
+// ------------------------------------------------------------------ 大肥鱼
+function makeWhale() {
+  const root = new THREE.Group(), body = new THREE.Group(); root.add(body);
+  const blue = mat('#4f6df5', { roughness: 0.5 }), pale = mat('#eef3ff', { roughness: 0.6 });
+  blob(0.6, null, 0.85, 0.78, 1.15, 0, 0, 0, body, blue);
+  blob(0.6, null, 0.72, 0.55, 1.0, 0, -0.17, 0.08, body, pale);
+  blob(0.6, null, 0.4, 0.12, 0.5, 0, 0.42, 0.05, body, mat('#6b86ff', { roughness: 0.5 }));
+  const eyeMat = mat('#1d1b2b', { roughness: 0.3 }), shine = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+  const eyes = [-1, 1].map((s) => {
+    const eye = new THREE.Group(); eye.position.set(0.27 * s, 0.1, 0.56); body.add(eye);
+    eye.add(new THREE.Mesh(new THREE.SphereGeometry(0.075, 16, 12), eyeMat));
+    const glint = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), shine); glint.position.set(0.02 * s, 0.03, 0.06); eye.add(glint);
+    return eye;
+  });
+  [-1, 1].forEach((s) => blob(0.07, null, 1, 0.6, 0.4, 0.37 * s, -0.06, 0.45, body, mat('#ff9fb3', { roughness: 0.7 })));
+  const mouth = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.012, 8, 16, Math.PI), eyeMat);
+  mouth.rotation.z = Math.PI; mouth.position.set(0, -0.04, 0.68); body.add(mouth);
+  const fins = [-1, 1].map((s) => {
+    const pivot = new THREE.Group(); pivot.position.set(0.42 * s, -0.17, 0.12); body.add(pivot);
+    const fin = blob(0.6, null, 0.4, 0.07, 0.24, 0.14 * s, 0, 0, pivot, blue); fin.rotation.z = -0.45 * s;
+    return pivot;
+  });
+  const tail = new THREE.Group(); tail.position.set(0, 0.04, -0.6); body.add(tail);
+  blob(0.5, null, 0.36, 0.3, 0.62, 0, 0, -0.18, tail, blue);
+  [-1, 1].forEach((s) => { const fluke = blob(0.5, null, 0.62, 0.08, 0.3, 0.19 * s, 0.03, -0.46, tail, blue); fluke.rotation.y = 0.55 * s; });
+  root.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = false; } });
+  return { root, body, eyes, fins, tail, mouth };
+}
+const IDLE_LINES = {
+  window: () => daylight() < 0.4 ? ['星星好多呀', '外面好安静', '月亮今天是弯的'] : ['外面天气不错～', '有只鸟飞过去了', '想出去游泳'],
+  shelf: () => ['这本讲 Transformer 的还没看完', '翻翻以前的笔记', '找本漫画看看'],
+  plant: () => ['给小草浇点水', '它又长高了一点', '叶子绿绿的'],
+  rug: () => ['咕噜咕噜～', '主人在干嘛呢', '今天也是一条快乐的鱼'],
+  beanbag: () => ['懒人沙发真软', '发会儿呆', '躺平一下下'],
+};
+
+// 床头放一只小鲸鱼玩偶（原来那条 3D 鲸鱼）
+const plush = makeWhale(); plush.root.scale.setScalar(0.38); plush.root.position.set(-4.45, 0.92, 1.05);
+plush.root.rotation.y = 0.9; scene.add(plush.root);
+
+// ------------------------------------------------------------------ 大肥鱼（三视图立绘做成的立牌）
+const PX = 2.35 / 590;                                                   // 立绘像素 → 世界单位（正面图高 590px ≈ 2.35）
+const CAM_YAW = Math.atan2(camera.position.x, camera.position.z);
+const ELEV = Math.atan2(camera.position.y, Math.hypot(camera.position.x, camera.position.z));
+const STRETCH = 1 / Math.cos(ELEV);                                      // 竖直立牌被俯视压扁，拉回来
+const RIGHT = new V3(Math.cos(CAM_YAW), 0, -Math.sin(CAM_YAW));          // 屏幕向右
+const TOWARD = new V3(Math.sin(CAM_YAW), 0, Math.cos(CAM_YAW));          // 朝向镜头
+const SLEEP_TILT = -(Math.PI / 2 - Math.atan2(Math.sin(ELEV), 1));       // 躺下时头朝枕头
+const VIEWS = {};
+const charMat = new THREE.MeshBasicMaterial({ transparent: true, alphaTest: 0.08, side: THREE.DoubleSide });
+const charDepth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking, alphaTest: 0.5 });
+const charGeo = new THREE.PlaneGeometry(1, 1); charGeo.translate(0, 0.5, 0);
+const charMesh = new THREE.Mesh(charGeo, charMat);
+charMesh.customDepthMaterial = charDepth;   // 立牌投影看着像重影，只用脚下的圆影
+const char = { root: new THREE.Group(), pivot: new THREE.Group(), view: '', flip: false, viewSince: -1 };
+char.root.add(char.pivot); char.pivot.add(charMesh); char.root.rotation.y = CAM_YAW; scene.add(char.root);
+const footShadow = new THREE.Mesh(new THREE.CircleGeometry(0.42, 32), new THREE.MeshBasicMaterial({ color: '#2b1d18', transparent: true, opacity: 0.2, depthWrite: false }));
+footShadow.rotation.x = -Math.PI / 2; scene.add(footShadow);
+
+function applyView(name, flip = false) {
+  const v = VIEWS[name]; if (!v) return;
+  char.view = name; char.flip = flip;
+  charMat.map = v.tex; charDepth.map = v.tex; charMat.needsUpdate = true; charDepth.needsUpdate = true;
+  charMesh.scale.set(v.w * PX * (flip ? -1 : 1), v.h * PX * STRETCH, 1);
+}
+const loader = new THREE.TextureLoader();
+for (const name of ['front', 'side', 'back']) {
+  loader.load(`assets/${name}.png`, (tex) => {
+    tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
+    const c = document.createElement('canvas'); c.width = tex.image.width; c.height = tex.image.height;
+    const ctx = c.getContext('2d', { willReadFrequently: true }); ctx.drawImage(tex.image, 0, 0);
+    VIEWS[name] = { tex, w: c.width, h: c.height, pixels: ctx.getImageData(0, 0, c.width, c.height) };
+    if (!char.view || char.view === name) applyView(name, char.flip);
+  });
+}
+// 按“在屏幕上往哪边走”选视图：往下 = 正面，往上 = 背面，左右 = 侧面（原图朝左，往右走就镜像）
+function faceToward(dx, dz, t) {
+  const sx = dx * RIGHT.x + dz * RIGHT.z, sz = dx * TOWARD.x + dz * TOWARD.z;
+  const side = Math.abs(sx) > Math.abs(sz) * 0.8;
+  setView(side ? 'side' : sz > 0 ? 'front' : 'back', side && sx > 0, t);
+}
+function setView(name, flip, t) {
+  if ((name === char.view && flip === char.flip) || t - char.viewSince < 0.22) return;
+  char.viewSince = t; applyView(name, flip);
+}
+// 立牌上的点（x: -0.5~0.5，y: 0 脚 ~ 1 头顶）换成世界坐标
+const anchor = (x, y) => charMesh.localToWorld(new V3(x, y, 0.02));
+
+const V = (x, y, z) => new V3(x, y, z);
+const SPOTS = {
+  desk:    { pos: V(1.15, 0, -3.15),   near: V(1.15, 0, -2.3), view: 'back' },
+  bed:     { pos: V(-3.85, 0.98, 2.95), near: V(-2.5, 0, 2.6), view: 'back', sleep: true },
+  window:  { pos: V(-4.05, 0, -2.0),   near: V(-3.3, 0, -2.9), view: 'back' },
+  shelf:   { pos: V(-2.4, 0, -3.85),   near: V(-2.2, 0, -3.1), view: 'back' },
+  plant:   { pos: V(3.35, 0, -3.35),   near: V(2.9, 0, -2.6), view: 'side', flip: true },
+  rug:     { pos: V(0.6, 0, 1.3),      near: V(0.6, 0, 1.3),  view: 'front' },
+  beanbag: { pos: V(-2.85, 0.5, -1.05), near: V(-2.0, 0, -0.2), view: 'front' },
+};
+const IDLE_SPOTS = ['window', 'shelf', 'plant', 'rug', 'beanbag'];
+const HUB = V(0.3, 0, 0.1);
+// 查资料类的工作去书架翻书，其余的去书桌敲键盘（参考 Pixel Agents：读文件和写代码是两种动作）
+const RESEARCH = /查|搜|找|读|看|热榜|新闻|资料|search|read|fetch|browse|web|hot|wiki/i;
+function spotFor(state, detail = '') {
+  if (state === 'thinking' || state === 'replying') return 'desk';
+  if (state === 'working') return RESEARCH.test(detail) ? 'shelf' : 'desk';
+  if (state === 'resting') return 'bed';
+  return null;
+}
+
+const W = {
+  pos: SPOTS.rug.pos.clone(), path: [], spot: 'rug', arrived: true, legStart: false,
+  nextWander: 0, nextIdleAct: 3, idleSince: 0, nextEmote: 0, lastPuff: 0,
+  tilt: 0, walkPhase: 0, action: null, held: false, fallV: null, groundY: 0, swing: 0, swingTarget: 0,
+  snack: null, snackV: 0, label: '',
+};
+function goTo(name, force = false) {
+  const spot = SPOTS[name]; if (!spot) return;
+  if (!force && name === W.spot && (W.arrived || W.path.length)) return;
+  const from = SPOTS[W.spot];
+  W.path = [];
+  if (from && W.pos.distanceTo(from.pos) < 0.05 && from.near.distanceTo(W.pos) > 0.05) W.path.push(from.near.clone());
+  const start = W.path[0] || W.pos;
+  if (Math.hypot(start.x - spot.near.x, start.z - spot.near.z) > 2.5) W.path.push(HUB.clone());
+  W.path.push(spot.near.clone(), spot.pos.clone());
+  W.spot = name; W.arrived = false; W.legStart = true;
+}
+
+// ------------------------------------------------------------------ 动作
+// 立绘每个方向只有一张，所以动作都是“换视图 + 弹跳 / 倾斜 / 挤压拉伸 + 表情 + 小道具”拼出来的
+const ease = (k) => Math.sin(Math.min(Math.max(k, 0), 1) * Math.PI);
+const say = (lines, ms = 2400) => { if (!bubble.locked()) bubble.say(pick(lines), ms); };
+let plantBounce = 0;
+const ACT_NAMES = {
+  stretch: '伸懒腰', yawn: '打哈欠', twirl: '转圈圈', dance: '跳舞', daze: '发呆', doze: '打瞌睡', lookAround: '东张西望',
+  peek: '看窗外', water: '浇花', read: '看书', research: '翻书查资料', trip: '摔了一跤', alert: '有消息！', celebrate: '回完啦',
+  dizzy: '晕乎乎', wake: '起床', pet: '被摸头', poke: '被戳了', eat: '吃小鱼干', land: '落地',
+};
+const ACTIONS = {
+  // —— 闲着的时候（参考 Shimeji / VPet / oneko 的待机动作）
+  stretch: { dur: 2.2, start: () => say(['嗯——', '伸个懒腰～', '呼～舒服']),
+    update(a, k, p) { const e = ease(k / 0.8); p.sy *= 1 + 0.09 * e; p.sx *= 1 - 0.05 * e; p.bob += 0.06 * e; } },
+  yawn: { dur: 2.6, start: () => say(['哈啊～', '好困……']),
+    update(a, k, p) { const e = ease(k); p.tilt += 0.08 * e; p.sy *= 1 + 0.03 * e; if (k > 0.5 && !a.data.tear) { a.data.tear = true; emote('💧', 1.2); } } },
+  twirl: { dur: 1.2, start: () => emote('✨', 1.4),
+    update(a, k, p) { const seq = [['front', false], ['side', true], ['back', false], ['side', false], ['front', false]]; [p.view, p.flip] = seq[Math.min(4, Math.floor(k * 5))]; p.bob += ease(k) * 0.3; } },
+  dance: { dur: 5.4, start: (a) => { a.data.beat = -1; say(['♪ 啦啦啦～', '跳个舞！']); },
+    update(a, k, p) {
+      const beat = k * 5.4 * 2.4;
+      p.bob += Math.abs(Math.sin(beat * Math.PI)) * 0.18; p.tilt += Math.sin(beat * Math.PI) * 0.07;
+      p.view = Math.floor(beat / 4) % 2 ? 'front' : 'side'; p.flip = Math.floor(beat) % 2 === 0;
+      if (Math.floor(beat) > a.data.beat) { a.data.beat = Math.floor(beat); if (a.data.beat % 2 === 0) note(); }
+    } },
+  daze: { dur: 4.5, start: () => emote('…', 2.0),
+    update(a, k, p, t) { p.tilt += Math.sin(t * 0.9) * 0.04; if (k > 0.6 && !a.data.q) { a.data.q = true; emote('?', 1.4); } } },
+  lookAround: { dur: 2.8,
+    update(a, k, p) { p.view = 'side'; p.flip = Math.floor(k * 4) % 2 === 1; if (k > 0.7 && !a.data.q) { a.data.q = true; emote('?', 1.2); } } },
+  doze: { dur: 6, start: () => say(['zzZ……（站着睡着了）']),
+    update(a, k, p, t) {
+      const nod = Math.pow(Math.max(0, Math.sin(t * 1.3)), 3);
+      p.tilt += nod * 0.14; p.bob -= nod * 0.04;
+      if (nod > 0.9 && t - (a.data.z || 0) > 1.2) { a.data.z = t; spawnZ(); }
+      if (k > 0.9 && !a.data.wake) { a.data.wake = true; emote('!', 0.8); }
+    } },
+  peek: { dur: 3.2, start: () => say(IDLE_LINES.window()),
+    update(a, k, p) { p.bob += ease(k) * 0.05; p.sy *= 1 + ease(k) * 0.03; if (k > 0.5 && !a.data.s) { a.data.s = true; emote(daylight() < 0.4 ? '⭐' : '☀️', 1.4); } } },
+  water: { dur: 4.2, start: (a) => { say(['给小草浇浇水', '快快长大～']); holdProp(a, 'can', -0.46, 0.4, 0.55); },
+    update(a, k, p, t) {
+      p.view = 'side'; p.flip = true;
+      const pour = k > 0.2 && k < 0.85; a.props[0].rot = pour ? 0.75 : 0.1;
+      if (pour && t - (a.data.d || 0) > 0.08) { a.data.d = t; waterDrop(anchor(-0.7, 0.42)); }
+      if (k > 0.85) plantBounce = 1;
+    } },
+  read: { dur: 6.5, start: (a) => { say(IDLE_LINES.shelf()); holdProp(a, 'book', 0, 0.36, 0.62); },
+    update(a, k, p, t) { p.view = 'front'; p.bob += Math.sin(t * 2) * 0.01; a.props[0].sx = (t % 1.6) < 0.15 ? 0.55 : 1; } },
+  trip: { dur: 1.6, start: (a) => { a.data.dir = char.view === 'side' ? (char.flip ? -1 : 1) : 0; },
+    update(a, k, p) {
+      const down = k < 0.15 ? k / 0.15 : k < 0.65 ? 1 : 1 - (k - 0.65) / 0.35;
+      if (a.data.dir) p.tilt += a.data.dir * 1.25 * down; else { p.sy *= 1 - 0.4 * down; p.sx *= 1 + 0.12 * down; }
+      if (k > 0.65 && !a.data.c) { a.data.c = true; emote('💧', 1.2); say(['呜……摔了', '哎呀']); }
+    } },
+  // —— 跟着 agent 状态（参考 Star-Office-UI / Pixel Agents：收消息、查资料、出错都有对应动作）
+  alert: { dur: 0.7, keep: true, start: () => emote('!', 1.0),
+    update(a, k, p) { p.bob += ease(k) * 0.3; p.sy *= 1 + ease(k) * 0.05; } },
+  celebrate: { dur: 1.1, keep: true, start: () => { emote('✨', 1.4); sparkle(); },
+    update(a, k, p) { const e = ease(k); p.bob += e * 0.42; p.sy *= 1 + (e - 0.4) * 0.08; p.view = 'front'; } },
+  research: { dur: 1.6, loop: true, start: (a) => holdProp(a, 'book', 0, 0.36, 0.62),
+    update(a, k, p, t) {
+      p.view = 'front'; p.tilt += Math.sin(t * 1.1) * 0.03; a.props[0].sx = k < 0.1 ? 0.55 : 1;
+      if (a.newCycle && Math.random() < 0.35) emote(pick(['💡', '?', '…']), 1.1);
+    } },
+  dizzy: { dur: 2.0, loop: true, start: () => say(['呜……出错了', '脑袋晕晕的']),
+    update(a, k, p, t) { p.view = 'front'; p.tilt += Math.sin(t * 5) * 0.09; if (a.newCycle) emote('💫', 2.0); } },
+  wake: { dur: 1.8, keep: true, start: () => say(['哈啊～睡醒了', '谁叫我……']),
+    update(a, k, p) { p.sy *= 1 + ease(k) * 0.06; } },
+  // —— 你和她互动（参考 VPet 的摸头 / 摸身体、Shimeji 的拎起来）
+  pet: { dur: 1.4, start: () => { for (let i = 0; i < 3; i++) setTimeout(spawnHeart, i * 160); say(['嘿嘿', '咕噜～', '再摸一下', '好舒服']); },
+    update(a, k, p, t) { const b = Math.abs(Math.sin(t * 10)); p.bob += b * 0.2 * (1 - k); p.sy *= 1 + (b - 0.5) * 0.05; p.view = 'front'; } },
+  poke: { dur: 0.9, start: () => { emote(pick(['💢', '!']), 1.0); say(['别戳啦！', '痒～', '干嘛呀']); },
+    update(a, k, p, t) { p.shake = Math.sin(t * 60) * 0.05 * (1 - k); p.sy *= 1 - 0.05 * ease(k); p.view = 'front'; } },
+  eat: { dur: 2.6, start: () => say(['小鱼干！', '好吃好吃']),
+    update(a, k, p) {
+      p.view = 'front'; const chomp = Math.abs(Math.sin(k * Math.PI * 4));
+      p.sy *= 1 - chomp * 0.06; p.bob += chomp * 0.04;
+      if (W.snack) { W.snack.scale.setScalar(0.5 * (1 - k)); W.snack.position.copy(anchor(0, 0.58).addScaledVector(TOWARD, 0.15)); }
+    },
+    end() { removeSnack(); for (let i = 0; i < 4; i++) setTimeout(spawnHeart, i * 140); bubble.say('嗝～吃饱了', 1800); localLog('大肥鱼把小鱼干吃掉了'); } },
+  land: { dur: 0.5, start: () => { say(['哎哟！', '吓我一跳']); puff(5); },
+    update(a, k, p) { const e = ease(k); p.sy *= 1 - 0.22 * e; p.sx *= 1 + 0.12 * e; }, end: () => resume() },
+};
+const IDLE_ACTS = {
+  window: ['peek', 'peek', 'stretch', 'lookAround'],
+  shelf: ['read', 'read', 'lookAround'],
+  plant: ['water', 'water', 'daze'],
+  rug: ['dance', 'twirl', 'stretch', 'daze', 'lookAround'],
+  beanbag: ['daze', 'yawn', 'stretch'],
+};
+function act(name, opts = {}) {
+  const def = ACTIONS[name]; if (!def) return;
+  endAction();
+  W.action = { name, def, t0: clock.elapsedTime, dur: def.dur, loop: !!def.loop, cycle: -1, newCycle: false, data: {}, props: [], ...opts };
+  def.start?.(W.action);
+}
+function endAction() {
+  const a = W.action; if (!a) return;
+  W.action = null;
+  a.props.forEach((prop) => { scene.remove(prop.sprite); prop.sprite.material.dispose(); });
+  a.def.end?.(a);
+}
+function holdProp(a, kind, x, y, scale) {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: PROP_TEX[kind], transparent: true, depthTest: false }));
+  sprite.renderOrder = 5; scene.add(sprite);
+  a.props.push({ sprite, kind, x, y, scale, sx: 1, rot: 0 });
+}
+// 精灵的负缩放不会镜像（three.js 取的是缩放长度），所以朝右时换一张左右翻转的贴图
+const mirroredCache = {};
+function mirrored(kind) {
+  if (!mirroredCache[kind]) {
+    const img = PROP_TEX[kind].image;
+    mirroredCache[kind] = canvasTexture(img.width, img.height, (ctx, w) => { ctx.translate(w, 0); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0); }).tex;
+  }
+  return mirroredCache[kind];
+}
+function applyViewNow(name, flip, t) {
+  if (name === char.view && flip === char.flip) return;
+  char.viewSince = t; applyView(name, flip);
+}
+function localLog(text) { addFeed({ type: 'log', text, ts: Date.now() / 1000 }); }
+
+// 被拎起来放下后，回到当前状态该去的地方
+function resume() {
+  W.spot = 'free'; W.arrived = true; W.path = [];
+  const target = spotFor(room.state, room.detail);
+  if (target) goTo(target, true); else W.nextWander = clock.elapsedTime + 1.5;
+}
+
+// ------------------------------------------------------------------ 每帧更新
+function updateChar(dt, t) {
+  const s = room.state, urgent = s === 'thinking' || s === 'replying';
+  let cur = W.action, ak = 0;
+  if (cur) {
+    const elapsed = t - cur.t0;
+    if (cur.loop) { const cycle = Math.floor(elapsed / cur.dur); cur.newCycle = cycle !== cur.cycle; cur.cycle = cycle; ak = (elapsed / cur.dur) % 1; }
+    else { ak = elapsed / cur.dur; if (ak >= 1) { endAction(); cur = W.action; ak = cur ? 0 : ak; } }
+  }
+  const holding = cur && !cur.def.walk;   // 做动作的时候原地不动
+  // 移动：被拎着 / 往下掉 / 走路
+  if (W.held) {
+    W.swing += (W.swingTarget - W.swing) * Math.min(1, dt * 10); W.swingTarget *= Math.exp(-dt * 4);
+  } else if (W.fallV !== null) {
+    W.fallV += 14 * dt; W.pos.y = Math.max(W.groundY, W.pos.y - W.fallV * dt);
+    if (W.pos.y <= W.groundY) { W.fallV = null; act('land'); cur = W.action; ak = 0; }
+  } else if (W.path.length && !holding) {
+    if (W.legStart) { W.legStart = false; if (!urgent && s === 'idle' && Math.random() < 0.05) { act('trip'); cur = W.action; } }
+    const target = W.path[0], delta = target.clone().sub(W.pos), dist = delta.length();
+    if (!W.action && dist > 0.01) {
+      W.pos.addScaledVector(delta.clone().normalize(), Math.min(dist, (urgent ? 3.6 : 2.1) * dt));
+      if (Math.hypot(delta.x, delta.z) > 0.08) faceToward(delta.x, delta.z, t);
+      if (urgent && t - W.lastPuff > 0.12) { W.lastPuff = t; puff(1); }
+    }
+    if (dist < 0.02) { W.path.shift(); W.legStart = true; if (!W.path.length) { W.arrived = true; onArrive(); } }
+  }
+  const spot = SPOTS[W.spot];
+  const walking = W.path.length > 0 && !cur && !W.held && W.fallV === null;
+  const settled = W.arrived && !W.held && W.fallV === null;
+  const sleeping = settled && spot?.sleep && s === 'resting';
+  const atDesk = settled && W.spot === 'desk';
+  if (settled && spot && !cur) setView(spot.view, !!spot.flip, t);
+
+  // 姿势
+  const p = { bob: 0, tilt: 0, sx: 1, sy: 1, view: null, flip: false, shake: 0 };
+  if (W.held) { p.view = 'front'; p.tilt = W.swing + Math.sin(t * 3) * 0.04; p.sy = 1.05; }
+  else if (walking) { W.walkPhase += dt * (urgent ? 15 : 11); p.bob = Math.abs(Math.sin(W.walkPhase)) * 0.07; p.tilt = Math.sin(W.walkPhase) * 0.05; }
+  else if (sleeping) { p.tilt = SLEEP_TILT; p.sy = 1 + Math.sin(t * 1.3) * 0.015; }
+  else if (atDesk && s === 'thinking') {
+    p.tilt = Math.sin(t * 1.4) * 0.06;
+    if (!cur && t > W.nextEmote) { W.nextEmote = t + rand(3.5, 6); emote(pick(['?', '…', '💡']), 1.3); }
+  }
+  else if (atDesk && s === 'replying') { p.bob = Math.abs(Math.sin(t * 15)) * 0.025; p.tilt = Math.sin(t * 7) * 0.02; }
+  else if (atDesk && s === 'working') { p.bob = Math.abs(Math.sin(t * 11)) * 0.02; }
+  else p.sy = 1 + Math.sin(t * 2.2) * 0.012;
+  if (cur && !W.held) cur.def.update?.(cur, ak, p, t);
+  if (p.view) applyViewNow(p.view, p.flip, t);
+
+  const bigMove = sleeping || (Math.abs(p.tilt - W.tilt) > 0.5 && cur?.name !== 'trip' && !W.held);
+  W.tilt += (p.tilt - W.tilt) * (1 - Math.exp(-dt * (bigMove ? 3 : 14)));
+  char.root.position.copy(W.pos).addScaledVector(RIGHT, p.shake);
+  char.pivot.position.y = p.bob;
+  char.pivot.rotation.z = W.tilt;
+  const shrink = sleeping ? 0.82 : 1;
+  char.pivot.scale.set(shrink * p.sx, shrink * p.sy, 1);
+  // 小道具跟着手走
+  cur?.props.forEach((prop) => {
+    const mirror = char.flip ? -1 : 1;
+    prop.sprite.position.copy(anchor(prop.x, prop.y)).addScaledVector(TOWARD, 0.1);
+    const map = char.flip ? mirrored(prop.kind) : PROP_TEX[prop.kind];
+    if (prop.sprite.material.map !== map) { prop.sprite.material.map = map; prop.sprite.material.needsUpdate = true; }
+    prop.sprite.scale.set(prop.scale * prop.sx, prop.scale, 1);
+    prop.sprite.material.rotation = mirror * prop.rot;
+  });
+  // 脚下的影子：拎起来时留在地上，离得越高越小
+  const ground = W.held || W.fallV !== null ? W.groundY : W.pos.y;
+  footShadow.visible = !(spot?.sleep && settled);
+  footShadow.position.set(W.pos.x, ground + 0.012, W.pos.z);
+  footShadow.scale.setScalar(Math.max(0.35, 1 - p.bob * 1.2 - (W.pos.y - ground) * 0.35));
+  // 灯光：立绘不参与光照，按房间亮度调色
+  const d = daylight(), level = (0.66 + 0.34 * d) * (s === 'resting' ? 0.82 : 1);
+  charMat.color.setRGB(Math.min(1, level + (1 - d) * 0.06), level, Math.max(0, level - (1 - d) * 0.03));
+  // 零食掉下来
+  if (W.snack && W.snack.position.y > 0.22 && W.action?.name !== 'eat') {
+    W.snackV += 12 * dt; W.snack.position.y = Math.max(0.22, W.snack.position.y - W.snackV * dt);
+    if (W.snack.position.y <= 0.22 && W.snackV > 3) { W.snackV = -W.snackV * 0.3; W.snack.position.y = 0.23; }
+  }
+  if (plantBounce > 0) { plantBounce = Math.max(0, plantBounce - dt * 0.7); plantLeaves.forEach((leaf, i) => { leaf.scale.y = 0.85 * (1 + plantBounce * 0.14 * Math.sin(t * 12 + i)); }); }
+
+  // 接下来做什么
+  if (settled && !cur) {
+    if (s === 'working' && W.spot === 'shelf') act('research');
+    else if (s === 'error') act('dizzy');
+    else if (s === 'idle') {
+      if (W.snack && W.spot !== 'snack') goTo('snack');
+      else if (W.snack && W.spot === 'snack') act('eat');
+      else if (IDLE_ACTS[W.spot] && t > W.nextIdleAct) {
+        W.nextIdleAct = t + rand(6, 10);
+        const options = [...IDLE_ACTS[W.spot]];
+        if (t - W.idleSince > 150) options.push('yawn', 'doze', 'doze');
+        act(pick(options)); W.nextWander = Math.max(W.nextWander, t + 3);
+      } else if (t > W.nextWander) {
+        W.nextWander = t + rand(9, 15);
+        goTo(pick(IDLE_SPOTS.filter((name) => name !== W.spot)));
+      }
+    }
+  }
+  // 状态卡上显示正在做的动作
+  const label = W.held ? '被拎起来了' : W.fallV !== null ? '掉下来了' : cur ? ACT_NAMES[cur.name]
+    : walking ? (urgent ? '小跑过去' : '走路') : sleeping ? '睡觉'
+    : atDesk ? ({ thinking: '托着脑袋想', replying: '噼里啪啦打字', working: '敲代码' }[s] || '站着') : '站着';
+  if (label !== W.label) { W.label = label; $('act').textContent = `动作：${label}`; }
+}
+function onArrive() {
+  const now = clock.elapsedTime;
+  if (room.state === 'idle') {
+    W.nextIdleAct = now + rand(0.8, 2.5); W.nextWander = now + rand(8, 13);
+    if (Math.random() < 0.25 && IDLE_LINES[W.spot] && !bubble.locked()) bubble.say(pick(IDLE_LINES[W.spot]()), 2800);
+  }
+  if (room.state === 'resting' && W.spot === 'bed') bubble.hide();
+}
+// 点到立绘不透明的地方才算摸到；上面三分之一是头
+function hitChar(raycaster) {
+  const hit = raycaster.intersectObject(charMesh)[0], v = VIEWS[char.view];
+  if (!hit || !v) return false;
+  const x = Math.floor(hit.uv.x * v.w), y = Math.floor((1 - hit.uv.y) * v.h);
+  if (v.pixels.data[(y * v.w + x) * 4 + 3] <= 60) return false;
+  return hit.uv.y > 0.66 ? 'head' : 'body';
+}
+
+// 喂小鱼干（参考 VPet 的喂食）
+function dropSnack() {
+  if (W.snack) return bubble.say('地上还有一条呢～', 1500);
+  const x = rand(-1.0, 2.2), z = rand(-0.4, 2.4);
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: PROP_TEX.fish, transparent: true }));
+  sprite.scale.set(0.5, 0.5, 1); sprite.position.set(x, 3.4, z); scene.add(sprite);
+  W.snack = sprite; W.snackV = 0;
+  const stand = V(x, 0, z).addScaledVector(TOWARD, -0.35);
+  SPOTS.snack = { pos: stand, near: stand.clone(), view: 'front' };
+  localLog('你丢了一条小鱼干');
+  if (room.state === 'resting') bubble.say('（梦到了小鱼干……）', 2000);
+  else if (room.state !== 'idle') bubble.say('等我忙完再吃～', 1800);
+}
+function removeSnack() {
+  if (W.snack) { scene.remove(W.snack); W.snack.material.dispose(); }
+  W.snack = null; delete SPOTS.snack;
+  W.nextWander = clock.elapsedTime + 2;
+}
+
+// ------------------------------------------------------------------ 粒子：Zzz、泡泡、喷水、爱心、信封
+const particles = [];
+function textSprite(text, color, size = 64) {
+  const { tex } = canvasTexture(size, size, (ctx) => {
+    ctx.font = `bold ${size * 0.72}px "Microsoft YaHei", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillStyle = color; ctx.fillText(text, size / 2, size / 2 + 2);
+  });
+  return tex;
+}
+const zTex = textSprite('Z', '#8f86d8'), heartTex = textSprite('❤', '#ff6f8f');
+function spawn(mesh, life, update) { scene.add(mesh); particles.push({ mesh, life, age: 0, update }); }
+function spawnZ() {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: zTex, transparent: true, depthWrite: false }));
+  const start = anchor(0, 0.85).add(V(0, 0.2, 0)); sprite.position.copy(start);
+  spawn(sprite, 3, (p, k) => { sprite.position.set(start.x + Math.sin(k * 6) * 0.15 + k * 0.4, start.y + k * 1.3, start.z + k * 0.3); const sc = 0.22 + k * 0.3; sprite.scale.set(sc, sc, 1); sprite.material.opacity = 1 - k; });
+}
+function spawnHeart() {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: heartTex, transparent: true, depthWrite: false }));
+  const start = anchor(rand(-0.3, 0.3), 0.92);
+  spawn(sprite, 1.4, (p, k) => { sprite.position.set(start.x, start.y + k * 1.1, start.z); const sc = 0.3 + k * 0.15; sprite.scale.set(sc, sc, 1); sprite.material.opacity = 1 - k * k; });
+}
+const bubbleMat = new THREE.MeshStandardMaterial({ color: '#cfe8ff', transparent: true, opacity: 0.55, roughness: 0.1 });
+function spawnBubble() {
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(rand(0.04, 0.08), 10, 8), bubbleMat);
+  const start = anchor(rand(-0.15, 0.15), 0.55).addScaledVector(TOWARD, 0.2);
+  spawn(mesh, 2.4, (p, k) => mesh.position.set(start.x + Math.sin(k * 9) * 0.06, start.y + k * 1.4, start.z));
+}
+const dropMat = new THREE.MeshStandardMaterial({ color: '#9fd3ff', transparent: true, opacity: 0.85, roughness: 0.2 });
+function spout() {
+  for (let i = 0; i < 16; i++) {
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(rand(0.035, 0.06), 8, 6), dropMat);
+    const start = anchor(0, 0.97), vel = new V3(rand(-0.9, 0.9), rand(2.6, 3.6), rand(-0.9, 0.9));
+    spawn(mesh, 1.15, (p) => { const a = p.age; mesh.position.set(start.x + vel.x * a, start.y + vel.y * a - 4.5 * a * a, start.z + vel.z * a); });
+  }
+}
+function envelope(from, to, done) {
+  const group = new THREE.Group();
+  group.add(new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, 0.3), mat('#fffdf7')));
+  const seal = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.04, 12), mat('#e8735a')); seal.position.y = 0.02; group.add(seal);
+  group.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+  const control = from.clone().lerp(to, 0.5); control.y += 1.6;
+  spawn(group, 1.2, (p, k) => {
+    const a = from.clone().lerp(control, k), b = control.clone().lerp(to, k);
+    group.position.copy(a.lerp(b, k)); group.rotation.set(Math.sin(k * 6) * 0.4, k * 5, 0.3);
+    const sc = k > 0.85 ? (1 - k) / 0.15 : 1; group.scale.setScalar(Math.max(sc, 0.01));
+    if (k >= 1 && done) done();
+  });
+}
+// —— 表情、音符、尘土、闪光、水滴、小道具
+const EMOJI_FONT = '"Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "Microsoft YaHei", sans-serif';
+const glyphCache = {};
+function glyphTex(text, color = '#4f6df5') {
+  const key = text + color;
+  if (!glyphCache[key]) {
+    glyphCache[key] = canvasTexture(128, 128, (ctx) => {
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = `900 92px ${EMOJI_FONT}`;
+      ctx.lineWidth = 14; ctx.strokeStyle = '#ffffff'; ctx.lineJoin = 'round';
+      ctx.strokeText(text, 64, 70); ctx.fillStyle = color; ctx.fillText(text, 64, 70);
+    }).tex;
+  }
+  return glyphCache[key];
+}
+const EMOTE_COLORS = { '!': '#e8735a', '?': '#4f6df5', '…': '#7a6f80' };
+function emote(symbol, life = 1.4) {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glyphTex(symbol, EMOTE_COLORS[symbol]), transparent: true, depthTest: false }));
+  sprite.renderOrder = 6;
+  spawn(sprite, life, (p, k) => {
+    sprite.position.copy(anchor(0.34, 0.98)).add(V(0, 0.12 + k * 0.12, 0));
+    const pop = Math.min(1, k * 7), sc = 0.42 * (pop < 1 ? pop * 1.15 : 1);
+    sprite.scale.set(sc, sc, 1); sprite.material.opacity = k > 0.8 ? (1 - k) / 0.2 : 1;
+  });
+}
+function note() {
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glyphTex(pick(['♪', '♫']), pick(['#4f6df5', '#e8735a', '#7cbf8e'])), transparent: true, depthTest: false }));
+  const start = anchor(rand(-0.4, 0.4), 0.85), drift = rand(-0.5, 0.5);
+  spawn(sprite, 1.6, (p, k) => { sprite.position.set(start.x + drift * k, start.y + k * 1.0, start.z); sprite.scale.setScalar(0.3); sprite.material.opacity = 1 - k; });
+}
+const puffMat = new THREE.MeshBasicMaterial({ color: '#e9d4bd', transparent: true, opacity: 0.7, depthWrite: false });
+function puff(count = 1) {
+  for (let i = 0; i < count; i++) {
+    const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), puffMat.clone());
+    const start = W.pos.clone().add(V(rand(-0.25, 0.25), 0.06, rand(-0.25, 0.25)));
+    spawn(mesh, 0.6, (p, k) => { mesh.position.set(start.x, start.y + k * 0.15, start.z); mesh.scale.setScalar(1 + k * 1.8); mesh.material.opacity = 0.7 * (1 - k); });
+  }
+}
+function sparkle() {
+  for (let i = 0; i < 6; i++) {
+    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glyphTex('✦', pick(['#f2b84b', '#ffd36b', '#8ea2ff'])), transparent: true, depthTest: false }));
+    const a = i / 6 * Math.PI * 2, center = anchor(0, 0.75);
+    spawn(sprite, 0.9, (p, k) => {
+      sprite.position.copy(center).addScaledVector(RIGHT, Math.cos(a) * (0.3 + k * 0.7)).add(V(0, Math.sin(a) * (0.3 + k * 0.7), 0));
+      sprite.scale.setScalar(0.26 * (1 - k * 0.6)); sprite.material.opacity = 1 - k;
+    });
+  }
+}
+function waterDrop(from) {
+  const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.035, 6, 5), dropMat);
+  const vx = rand(0.3, 0.7);
+  spawn(mesh, 0.55, (p) => { const a = p.age; mesh.position.set(from.x + vx * a, from.y - 3.5 * a * a, from.z - vx * a); });
+}
+// 小道具画在 canvas 上：书、洒水壶（壶嘴朝左，往右时镜像）、小鱼干
+const PROP_TEX = {
+  book: canvasTexture(128, 128, (ctx) => {
+    ctx.fillStyle = '#e8735a'; ctx.beginPath(); ctx.roundRect(10, 34, 108, 66, 8); ctx.fill();
+    ctx.fillStyle = '#fffaf0';
+    ctx.beginPath(); ctx.moveTo(16, 38); ctx.lineTo(62, 46); ctx.lineTo(62, 96); ctx.lineTo(16, 90); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(112, 38); ctx.lineTo(66, 46); ctx.lineTo(66, 96); ctx.lineTo(112, 90); ctx.fill();
+    ctx.strokeStyle = '#c9c2d8'; ctx.lineWidth = 3;
+    for (let i = 0; i < 4; i++) { const y = 56 + i * 9; ctx.beginPath(); ctx.moveTo(24, y - 4); ctx.lineTo(56, y); ctx.moveTo(72, y); ctx.lineTo(104, y - 4); ctx.stroke(); }
+  }).tex,
+  can: canvasTexture(128, 128, (ctx) => {
+    ctx.strokeStyle = '#4b8fc4'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(50, 70); ctx.lineTo(16, 40); ctx.stroke();
+    ctx.fillStyle = '#4b8fc4'; ctx.beginPath(); ctx.ellipse(14, 38, 9, 13, -0.7, 0, 7); ctx.fill();
+    ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(84, 50, 22, Math.PI, 0); ctx.stroke();
+    ctx.fillStyle = '#6fb3e0'; ctx.beginPath(); ctx.roundRect(48, 52, 64, 52, 12); ctx.fill();
+    ctx.fillStyle = '#ffffff88'; ctx.fillRect(58, 60, 8, 34);
+  }).tex,
+  fish: canvasTexture(128, 128, (ctx) => {
+    ctx.fillStyle = '#f0a04b'; ctx.beginPath(); ctx.ellipse(58, 64, 36, 20, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(88, 64); ctx.lineTo(118, 44); ctx.lineTo(112, 64); ctx.lineTo(118, 84); ctx.fill();
+    ctx.strokeStyle = '#d27e2f'; ctx.lineWidth = 4;
+    for (const x of [52, 64, 76]) { ctx.beginPath(); ctx.moveTo(x, 50); ctx.lineTo(x - 4, 78); ctx.stroke(); }
+    ctx.fillStyle = '#3b3446'; ctx.beginPath(); ctx.arc(36, 60, 4.5, 0, 7); ctx.fill();
+  }).tex,
+};
+const WINDOW_OUT = new V3(-6.2, 2.65, -2.0);
+function updateParticles(dt) {
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i]; p.age += dt; const k = Math.min(1, p.age / p.life);
+    p.update(p, k);
+    if (k >= 1) {
+      scene.remove(p.mesh);
+      p.mesh.traverse((o) => { if (o.isSprite) o.material.dispose(); });
+      particles.splice(i, 1);
+    }
+  }
+}
+
+// ------------------------------------------------------------------ 电脑屏幕
+const screenState = { lastIn: null, reply: '', work: '', codeSeed: 0 };
+function drawScreen(t) {
+  const { ctx } = screen, w = 512, h = 320, s = room.state;
+  ctx.textBaseline = 'top';
+  if (s === 'resting') {
+    ctx.fillStyle = '#0c0e14'; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = 'rgba(255,255,255,.04)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(220, 0); ctx.lineTo(80, h); ctx.lineTo(0, h); ctx.fill();
+    screenGlow.intensity = 0;
+  } else if (s === 'error') {
+    ctx.fillStyle = '#3a1f2b'; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#ff8a7a'; ctx.font = '700 40px "Microsoft YaHei", sans-serif'; ctx.fillText('⚠ 出错了', 28, 40);
+    ctx.fillStyle = '#f3d6d6'; ctx.font = '19px "Microsoft YaHei", sans-serif';
+    wrapText(ctx, room.detail, 450).slice(0, 5).forEach((line, i) => ctx.fillText(line, 30, 110 + i * 28));
+    screenGlow.intensity = Math.sin(t * 6) > 0 ? 0.9 : 0.3;
+  } else if (s === 'idle') {
+    const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#1d3a6e'); g.addColorStop(1, '#3d76b8');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+    const fx = (t * 60) % (w + 120) - 60, fy = 160 + Math.sin(t * 2) * 30;
+    ctx.fillStyle = '#ffffffcc'; ctx.beginPath(); ctx.ellipse(fx, fy, 30, 18, 0, 0, 7); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(fx - 26, fy); ctx.lineTo(fx - 48, fy - 14); ctx.lineTo(fx - 48, fy + 14); ctx.fill();
+    ctx.fillStyle = '#1d3a6e'; ctx.beginPath(); ctx.arc(fx + 14, fy - 4, 3.5, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ffffffaa'; ctx.font = '600 44px "Microsoft YaHei", sans-serif'; ctx.fillText(new Date().toTimeString().slice(0, 5), 28, 24);
+    ctx.font = '18px "Microsoft YaHei", sans-serif'; ctx.fillText('大肥鱼的电脑 · 待机中', 30, 80);
+    screenGlow.intensity = 0.4;
+  } else if (s === 'thinking' || s === 'replying') {
+    ctx.fillStyle = '#f6f7fb'; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#4f6df5'; ctx.fillRect(0, 0, w, 44);
+    ctx.fillStyle = '#fff'; ctx.font = '600 20px "Microsoft YaHei", sans-serif';
+    const who = screenState.lastIn?.who || '有人';
+    ctx.fillText(`💬 ${who}${screenState.lastIn?.where ? ' · ' + screenState.lastIn.where : ''}`, 16, 11);
+    ctx.font = '18px "Microsoft YaHei", sans-serif';
+    const inLines = wrapText(ctx, screenState.lastIn?.text || '……', 440).slice(0, 2);
+    ctx.fillStyle = '#e4e7f2'; ctx.fillRect(16, 58, 470, inLines.length * 26 + 16);
+    ctx.fillStyle = '#4a4a5a'; inLines.forEach((line, i) => ctx.fillText(line, 26, 66 + i * 26));
+    const top = 58 + inLines.length * 26 + 30;
+    if (s === 'thinking' && !screenState.reply) {
+      ctx.fillStyle = '#8a8fa8'; ctx.font = '20px "Microsoft YaHei", sans-serif';
+      ctx.fillText('思考中' + '.'.repeat(1 + Math.floor(t * 3) % 3), 26, top);
+    } else {
+      ctx.fillStyle = '#26263a'; ctx.font = '19px "Microsoft YaHei", sans-serif';
+      const lines = wrapText(ctx, screenState.reply + (Math.floor(t * 2.5) % 2 ? '▍' : ' '), 460);
+      const rows = Math.floor((h - top - 6) / 26);
+      lines.slice(-rows).forEach((line, i) => ctx.fillText(line, 26, top + i * 26));
+    }
+    screenGlow.intensity = 0.9;
+  } else if (s === 'working') {
+    ctx.fillStyle = '#1e1f2e'; ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#2a2c40'; ctx.fillRect(0, 0, w, 36);
+    ctx.fillStyle = '#e57f4f'; ctx.fillRect(12, 8, 150, 28);
+    ctx.fillStyle = '#fff'; ctx.font = '600 16px "Microsoft YaHei", sans-serif';
+    ctx.fillText(screenState.work ? 'memory.md' : '任务', 24, 13);
+    ctx.fillStyle = '#c9cbe0'; ctx.font = '15px Consolas, "Microsoft YaHei", monospace';
+    ctx.fillText(room.detail.slice(0, 30), 180, 12);
+    if (screenState.work) {
+      ctx.fillStyle = '#d8dbf0'; ctx.font = '17px Consolas, "Microsoft YaHei", monospace';
+      const lines = wrapText(ctx, screenState.work + (Math.floor(t * 2.5) % 2 ? '▍' : ''), 470);
+      lines.slice(-10).forEach((line, i) => ctx.fillText(line, 18, 50 + i * 26));
+    } else {
+      const scroll = Math.floor(t * 4);
+      const palette = ['#8ea2ff', '#e57f4f', '#7cbf8e', '#f2b84b', '#c9cbe0'];
+      for (let i = 0; i < 10; i++) {
+        let x = 18 + ((i + scroll) * 37 % 5) * 18, n = i + scroll;
+        for (let j = 0; j < 3 + (n * 7 % 4); j++) { const len = 20 + (n * 13 + j * 29) % 90; ctx.fillStyle = palette[(n + j) % 5]; ctx.fillRect(x, 54 + i * 26, len, 12); x += len + 10; }
+      }
+    }
+    screenGlow.intensity = 0.8;
+  }
+  screen.tex.needsUpdate = true;
+}
+
+// ------------------------------------------------------------------ 头顶气泡
+const bubble = (() => {
+  const el = $('bubble'); let until = 0, lock = 0;
+  return {
+    say(html, ms = 0, isHtml = false) { if (isHtml) el.innerHTML = html; else el.textContent = html; el.classList.remove('hidden'); until = ms ? performance.now() + ms : 0; },
+    dots() { el.innerHTML = '<span class="dots"><i></i><i></i><i></i></span>'; el.classList.remove('hidden'); until = 0; },
+    hide() { el.classList.add('hidden'); until = 0; },
+    hold(ms) { lock = performance.now() + ms; },
+    locked() { return performance.now() < lock; },
+    tick() {
+      if (until && performance.now() > until) this.hide();
+      const p = anchor(0, 1.02).add(V(0, 0.12, 0)).project(camera);
+      el.style.left = `${(p.x + 1) / 2 * innerWidth}px`; el.style.top = `${(1 - p.y) / 2 * innerHeight}px`;
+    },
+  };
+})();
+const tail = (text, n) => (text.length > n ? '…' + text.slice(-n) : text);
+
+// ------------------------------------------------------------------ 房间状态（来自服务端）
+const room = { state: 'idle', detail: '在房间里闲逛', since: Date.now() / 1000, source: 'room', stats: null, hasKey: false, model: '' };
+function setRoomState(ev, initial = false) {
+  const prev = room.state;
+  Object.assign(room, { state: ev.state, detail: ev.detail || STATES[ev.state]?.label || '', since: ev.since || Date.now() / 1000, source: ev.source || '' });
+  const info = STATES[room.state] || STATES.idle;
+  $('chip').style.setProperty('--state', info.color); $('chipText').textContent = info.label;
+  $('detail').textContent = room.detail; $('source').textContent = SOURCES[room.source] ? `来自：${SOURCES[room.source]}` : '';
+  if (W.action && !W.action.def.keep) endAction();
+  if (prev === 'resting' && room.state !== 'resting' && !initial) act('wake');
+  if (room.state === 'idle' && (prev !== 'idle' || initial)) W.idleSince = clock.elapsedTime;
+  const target = spotFor(room.state, room.detail);
+  if (W.held || W.fallV !== null) { /* 放下后 resume() 会去该去的地方 */ }
+  else if (target) goTo(target);
+  else if (room.state === 'idle' && (prev !== 'idle' || initial)) goTo(initial ? 'rug' : pick(['rug', 'beanbag', 'window']));
+  if (room.state === 'thinking') { if (prev !== 'thinking') screenState.reply = ''; bubble.dots(); }
+  else if (room.state === 'working') { if (prev !== 'working') screenState.work = ''; bubble.say(`🛠️ ${room.detail}`); }
+  else if (room.state === 'resting') { bubble.say('呼……', 1800); }
+  else if (room.state === 'error') { bubble.say(`💫 ${room.detail}`, 5000); }
+  else if (room.state === 'replying') { if (!screenState.reply) bubble.dots(); }
+  else if (room.state === 'idle' && !bubble.locked()) bubble.hide();
+}
+
+function feedItem(ev) {
+  const li = document.createElement('li'); li.className = ev.type;
+  const time = document.createElement('time'); time.textContent = hhmm(ev.ts || Date.now() / 1000);
+  const txt = document.createElement('div'); txt.className = 'txt';
+  if (ev.type === 'state') {
+    const info = STATES[ev.state] || STATES.idle;
+    const dot = document.createElement('span'); dot.className = 'dot'; dot.style.background = info.color;
+    txt.append(dot, `${info.label}：${ev.detail || ''}`);
+  } else if (ev.type === 'msg_in') {
+    const b = document.createElement('b'); b.textContent = `📩 ${ev.who}${ev.where ? '（' + ev.where + '）' : ''}`;
+    txt.append(b, `：${ev.text}`);
+  } else if (ev.type === 'msg_out') {
+    const b = document.createElement('b'); b.textContent = `💬 回复${ev.who ? ' ' + ev.who : ''}`;
+    txt.append(b, `：${ev.text.length > 120 ? ev.text.slice(0, 120) + '…' : ev.text}`);
+  } else txt.textContent = `· ${ev.text}`;
+  li.append(time, txt); return li;
+}
+function addFeed(ev) {
+  const list = $('feed'); list.prepend(feedItem(ev));
+  while (list.children.length > 80) list.lastChild.remove();
+}
+function renderStats() {
+  const s = room.stats; if (!s) return;
+  $('stats').textContent = `今天 收到 ${s.msg_in} · 回复 ${s.replies} · 干活 ${s.works}　|　${room.hasKey ? room.model : '未配置 DeepSeek Key（演示模式）'}`;
+}
+
+function handle(ev) {
+  switch (ev.type) {
+    case 'hello':
+      $('feed').innerHTML = ''; ev.feed.forEach(addFeed);
+      room.stats = ev.stats; room.hasKey = ev.has_key; room.model = ev.model; renderStats();
+      setRoomState(ev.state, true); break;
+    case 'state': addFeed(ev); setRoomState(ev); break;
+    case 'msg_in':
+      addFeed(ev); screenState.lastIn = ev; screenState.reply = '';
+      envelope(WINDOW_OUT.clone(), anchor(0, 0.5).addScaledVector(TOWARD, 0.3), () => spawnBubble());
+      if (!W.held && W.fallV === null) act('alert'); break;
+    case 'chunk':
+      screenState.reply += ev.text; bubble.say(tail(screenState.reply, 90)); break;
+    case 'work_chunk':
+      screenState.work += ev.text; break;
+    case 'msg_out':
+      addFeed(ev); screenState.reply = ev.text;
+      bubble.say(ev.text.length > 140 ? ev.text.slice(0, 140) + '…' : ev.text, 7000); bubble.hold(7000);
+      spout(); setTimeout(() => envelope(anchor(0, 0.5).addScaledVector(TOWARD, 0.3), WINDOW_OUT.clone()), 500);
+      if (!W.held && W.fallV === null) act('celebrate'); break;
+    case 'log': addFeed(ev); break;
+    case 'stats': room.stats = ev.stats; renderStats(); break;
+  }
+}
+
+// ------------------------------------------------------------------ 连接服务端
+const banner = $('banner');
+function connect() {
+  if (location.protocol === 'file:') {
+    banner.textContent = '直接打开文件看不到它在干什么：请双击「启动小房间.bat」'; banner.classList.remove('hidden');
+    $('conn').textContent = '未连接'; setRoomState({ state: 'idle', detail: '在房间里闲逛' }, true); return;
+  }
+  const es = new EventSource('/api/stream');
+  es.onopen = () => { banner.classList.add('hidden'); $('conn').textContent = '● 实时'; };
+  es.onmessage = (m) => { try { handle(JSON.parse(m.data)); } catch (e) { console.error(e); } };
+  es.onerror = () => { $('conn').textContent = '重连中…'; banner.textContent = '和小房间断开了，正在重连…（服务关了的话重新运行 启动小房间.bat）'; banner.classList.remove('hidden'); };
+}
+connect();
+
+async function post(path, body) {
+  const res = await fetch(path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  return res.json();
+}
+$('chat').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const input = $('msg'), text = input.value.trim(); if (!text) return;
+  input.value = ''; $('send').disabled = true;
+  try { const r = await post('/api/chat', { message: text }); if (!r.ok && r.error) addFeed({ type: 'log', text: r.error, ts: Date.now() / 1000 }); }
+  catch { addFeed({ type: 'log', text: '发不出去：小房间的服务没开', ts: Date.now() / 1000 }); }
+  finally { $('send').disabled = false; input.focus(); }
+});
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+document.querySelectorAll('[data-demo]').forEach((btn) => btn.addEventListener('click', async () => {
+  const kind = btn.dataset.demo, ev = (body) => post('/api/event', { source: 'demo', ...body });
+  if (kind === 'working') return ev({ type: 'state', state: 'working', detail: '在用工具 get_hot_topics 查热榜' });
+  if (kind === 'resting') return ev({ type: 'state', state: 'resting', detail: '演示：在床上打个盹' });
+  if (kind === 'idle') return ev({ type: 'state', state: 'idle', detail: '在房间里闲逛' });
+  if (kind === 'error') return ev({ type: 'state', state: 'error', detail: '演示：DeepSeek 返回 500，没回上' });
+  if (kind === 'qq') {
+    await ev({ type: 'msg_in', who: '群友小王', where: 'QQ 群', text: '大肥鱼你今天都干啥了' });
+    await sleep(1600);
+    await ev({ type: 'state', state: 'replying', detail: '在回复 群友小王' });
+    const reply = '今天上午帮主人查了热榜，下午在床上睡了一觉，现在刚醒，正在书桌前回你消息呢～';
+    for (let i = 0; i < reply.length; i += 3) { await ev({ type: 'chunk', text: reply.slice(i, i + 3) }); await sleep(70); }
+    await ev({ type: 'msg_out', who: '群友小王', text: reply });
+  }
+}));
+
+// ------------------------------------------------------------------ 摸头、戳一下、拎起来（参考 VPet / Shimeji）
+const raycaster = new THREE.Raycaster(), ndc = new THREE.Vector2();
+const holdPlane = new THREE.Plane(new V3(0, 1, 0), -3.0), holdPoint = new V3();
+const canvasEl = $('scene');
+let drag = null;
+function aim(e) {
+  ndc.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  raycaster.setFromCamera(ndc, camera);
+}
+function groundAt(pos) {
+  if (pos.x < -3.05 && pos.z > 0.6 && pos.z < 3.45) return 0.65;   // 放在床上就站在床上
+  return 0;
+}
+function pickUp() {
+  endAction(); W.path = []; W.held = true; W.fallV = null; W.arrived = true; W.spot = 'free';
+  bubble.say(pick(['哇！放我下来～', '要飞起来了！', '别晃别晃']), 2000); bubble.hold(1200);
+  localLog('你把大肥鱼拎了起来');
+}
+function clickChar(part) {
+  const sleeping = room.state === 'resting' && W.spot === 'bed' && W.arrived;
+  if (sleeping) { for (let i = 0; i < 2; i++) setTimeout(spawnHeart, i * 160); bubble.say(part === 'head' ? '嗯……（蹭了蹭）' : '嗯……（翻了个身）', 2000); return; }
+  act(part === 'head' ? 'pet' : 'poke');
+}
+canvasEl.addEventListener('pointerdown', (e) => {
+  aim(e); const part = hitChar(raycaster); if (!part) return;
+  drag = { x: e.clientX, y: e.clientY, lastX: e.clientX, moved: false, part };
+  try { canvasEl.setPointerCapture(e.pointerId); } catch {}
+  canvasEl.style.cursor = 'grabbing';
+});
+canvasEl.addEventListener('pointermove', (e) => {
+  aim(e);
+  if (!drag) { canvasEl.style.cursor = hitChar(raycaster) ? 'grab' : 'default'; return; }
+  if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 8) { drag.moved = true; pickUp(); }
+  if (drag.moved && raycaster.ray.intersectPlane(holdPlane, holdPoint)) {
+    const x = Math.min(4.3, Math.max(-4.3, holdPoint.x)), z = Math.min(4.3, Math.max(-4.3, holdPoint.z));
+    W.groundY = groundAt(V(x, 0, z));
+    W.pos.set(x, Math.max(W.groundY + 0.35, 3.0 - 2.35), z);
+    W.swingTarget = Math.min(0.7, Math.max(-0.7, -(e.clientX - drag.lastX) * 0.03)); drag.lastX = e.clientX;
+  }
+});
+function release(e) {
+  if (!drag) return;
+  try { canvasEl.releasePointerCapture(e.pointerId); } catch {}
+  if (drag.moved) { W.held = false; W.fallV = 0; }
+  else clickChar(drag.part);
+  drag = null; canvasEl.style.cursor = 'grab';
+}
+canvasEl.addEventListener('pointerup', release);
+canvasEl.addEventListener('pointercancel', release);
+
+document.querySelectorAll('[data-play]').forEach((btn) => btn.addEventListener('click', () => {
+  const kind = btn.dataset.play;
+  if (kind === 'snack') return dropSnack();
+  if (room.state !== 'idle') return bubble.say(room.state === 'resting' ? '（睡得正香）' : '等我忙完～', 1500);
+  if (W.held || W.fallV !== null) return;
+  W.path = []; W.arrived = true; W.spot = 'free'; act(kind);
+}));
+
+// ------------------------------------------------------------------ 主循环
+const realClock = new THREE.Clock(), clock = { elapsedTime: 0 };   // clock 是动画时间，可以手动快进
+let lastScreen = 0, lastClock = -1, lastZ = 0, lastBubble = 0, lastSky = -1;
+function step(dt) {
+  clock.elapsedTime += dt; const t = clock.elapsedTime;
+  updateChar(dt, t); updateParticles(dt); bubble.tick();
+  const target = lightTargets(), k = 1 - Math.exp(-dt * 2);
+  for (const key of Object.keys(light)) light[key] += (target[key] - light[key]) * k;
+  sun.intensity = light.sun; hemi.intensity = light.hemi; lampLight.intensity = light.lamp;
+  shadeMat.emissiveIntensity = light.lamp / 3;
+  fairy.forEach((b, i) => b.material.color.setHSL(0.11, 0.8, 0.55 + light.fairy * (0.25 + 0.12 * Math.sin(t * 2 + i))));
+  if (t - lastScreen > 0.1) { drawScreen(t); lastScreen = t; }
+  const sec = new Date().getSeconds();
+  if (sec !== lastClock) {
+    drawClock(); lastClock = sec;
+    $('clock').textContent = new Date().toTimeString().slice(0, 5);
+    const mins = Math.floor((Date.now() / 1000 - room.since) / 60);
+    $('since').textContent = mins < 1 ? '刚刚开始' : mins < 60 ? `已经 ${mins} 分钟` : `已经 ${Math.floor(mins / 60)} 小时 ${mins % 60} 分`;
+    const minute = new Date().getMinutes();
+    if (minute !== lastSky) { drawSky(); applyDayClass(); lastSky = minute; }
+  }
+  if (room.state === 'resting' && W.arrived && W.spot === 'bed' && t - lastZ > 1.1) { spawnZ(); lastZ = t; }
+  if (room.state === 'idle' && W.arrived && t - lastBubble > 4.5) { if (Math.random() < 0.5) spawnBubble(); lastBubble = t; }
+}
+function frame() {
+  step(Math.min(realClock.getDelta(), 0.05));
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+drawSky(); drawClock(); applyDayClass();
+if (location.search.includes('debug')) window.__room = { THREE, renderer, scene, camera, char, W, goTo, SPOTS, room, resize, act, dropSnack,
+  run(sec) { for (let i = 0; i < sec * 30; i++) step(1 / 30); renderer.render(scene, camera); },
+  look(x, y, z, zoom) { camera.zoom = zoom; camera.position.set(x + 13, y + 11.5, z + 13); camera.lookAt(x, y, z); camera.updateProjectionMatrix(); renderer.render(scene, camera); } };
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

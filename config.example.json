@@ -1,0 +1,11 @@
+{
+  "deepseek_api_key": "",
+  "deepseek_base_url": "https://api.deepseek.com",
+  "model": "deepseek-flash",
+  "host": "127.0.0.1",
+  "port": 18765,
+  "event_token": "",
+  "rest_after_seconds": 300,
+  "night_hours": [1, 7],
+  "notes_every_turns": 6
+}

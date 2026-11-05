@@ -1,0 +1,6 @@
+name: astrbot_plugin_fish_room
+display_name: 大肥鱼的小房间
+desc: 把大肥鱼收消息、思考、回复、用工具的状态实时显示在电脑上的 2.5D 小房间里
+version: 1.0.0
+author: fish-room
+repo: ""

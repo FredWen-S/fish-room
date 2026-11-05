@@ -1,0 +1,9 @@
+# 本机配置：里面有 DeepSeek Key 和 event_token，不能上传
+config.json
+
+# 大肥鱼自己的房间：聊天记录、小本本、日志
+room/
+
+__pycache__/
+*.pyc
+*.log
