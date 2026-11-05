@@ -3,6 +3,31 @@ import * as THREE from 'three';
 export function createFurniture(scene, tools) {
 const { mat, box, cyl, blob, canvasTexture, rand, pick } = tools;
 
+class RoundedBoxGeometry extends THREE.ExtrudeGeometry {
+  constructor(width, height, depth, radius = 0.08) {
+    const r = Math.min(radius, width / 2, height / 2);
+    const shape = new THREE.Shape();
+    shape.moveTo(-width / 2 + r, -height / 2);
+    shape.lineTo(width / 2 - r, -height / 2);
+    shape.quadraticCurveTo(width / 2, -height / 2, width / 2, -height / 2 + r);
+    shape.lineTo(width / 2, height / 2 - r);
+    shape.quadraticCurveTo(width / 2, height / 2, width / 2 - r, height / 2);
+    shape.lineTo(-width / 2 + r, height / 2);
+    shape.quadraticCurveTo(-width / 2, height / 2, -width / 2, height / 2 - r);
+    shape.lineTo(-width / 2, -height / 2 + r);
+    shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2 + r, -height / 2);
+    super(shape, { depth, bevelEnabled: true, bevelSegments: 2, bevelSize: r * 0.45, bevelThickness: r * 0.45, curveSegments: 2 });
+    this.translate(0, 0, -depth / 2);
+  }
+}
+const roundedBox = (w, h, d, material, x, y, z, radius = 0.08) => {
+  const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, radius), material instanceof THREE.Material ? material : mat(material));
+  mesh.position.set(x, y + h / 2, z);
+  mesh.castShadow = mesh.receiveShadow = true;
+  scene.add(mesh);
+  return mesh;
+};
+
 // ── 共用材质（减少 draw calls）──────────────────────────
 const wood     = '#b98457', woodDark = '#9c6a43', woodLight = '#d4b896';
 const cream    = '#fffaf2', offWhite = '#f8f3ea';
@@ -55,7 +80,7 @@ scene.add(arcMesh);
 
 // ── 书桌 + 电脑 + 桌面小物 ─────────────────────────────
 // 桌面（日式圆角 — 用略厚板模拟圆润感）
-box(2.8, 0.12, 1.25, wood, 1.4, 0.93, -4.25);
+roundedBox(2.8, 0.12, 1.25, wood, 1.4, 0.93, -4.25, 0.06);
 // 桌腿（圆柱腿更温馨）
 [[0.15, -3.72], [2.65, -3.72], [0.15, -4.78], [2.65, -4.78]].forEach(([x, z]) =>
   cyl(0.06, 0.06, 0.93, woodDark, x, 0, z));
@@ -92,8 +117,8 @@ box(0.05, 0.025, 0.012, '#7cbf8e', 0.72, 0.35, -3.964);
 // 办公椅（桌前，朝向显示器）
 const chairFrame = mat('#353746', { roughness: 0.42, metalness: 0.28 });
 const chairSeat = mat('#6e7895', { roughness: 0.72 });
-box(0.92, 0.16, 0.82, chairSeat, 1.4, 0.63, -2.95);
-box(0.78, 0.95, 0.14, chairSeat, 1.4, 1.08, -2.59);
+roundedBox(0.92, 0.16, 0.82, chairSeat, 1.4, 0.63, -2.95, 0.08);
+roundedBox(0.78, 0.95, 0.14, chairSeat, 1.4, 1.08, -2.59, 0.08);
 box(0.08, 0.12, 0.72, chairFrame, 0.91, 0.72, -2.95);
 box(0.08, 0.12, 0.72, chairFrame, 1.89, 0.72, -2.95);
 cyl(0.07, 0.07, 0.48, chairFrame, 1.4, 0.27, -2.95);
@@ -126,12 +151,12 @@ blob(0.06, '#7cbf8e', 1, 1.2, 1, 0.2, 1.21, -4.6);
 
 // ── 床 ─────────────────────────────────────────────────
 // 床架（日式矮床框）
-box(1.9, 0.38, 3.0, wood, -3.95, 0, 2.0);
+roundedBox(1.9, 0.38, 3.0, wood, -3.95, 0, 2.0, 0.12);
 // 床头板（圆角 — 用略厚板 + 顶部圆柱边缘模拟）
 box(1.9, 1.05, 0.12, woodDark, -3.95, 0, 0.5);
 cyl(0.06, 0.06, 1.9, woodDark, -3.95, 1.05, 0.5);
 // 床垫
-box(1.8, 0.26, 2.85, offWhite, -3.95, 0.38, 2.05);
+roundedBox(1.8, 0.26, 2.85, offWhite, -3.95, 0.38, 2.05, 0.12);
 
 // 枕头（两个，更温馨）
 const pillow1 = blob(0.5, '#ffffff', 1.25, 0.28, 0.55, -3.6, 0.74, 0.95);
@@ -217,16 +242,18 @@ blob(0.02, null, 0.8, 1.6, 0.8, 3.8, 0.68, 1.5, scene, flameMat);
 
 // ── 串灯（后墙上方）──────────────────────────────────
 const fairy = [];
+const fairyMat = new THREE.MeshBasicMaterial({ color: '#d8c7a6' });
+const fairyMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 8, 6), fairyMat, 16);
+const fairyDummy = new THREE.Object3D();
 for (let i = 0; i < 16; i++) {
   const t = i / 15, x = -4.6 + t * 9.2, y = 4.35 - Math.sin(t * Math.PI * 3) ** 2 * 0.25;
-  const bulb = new THREE.Mesh(
-    new THREE.SphereGeometry(0.06, 10, 8),
-    new THREE.MeshBasicMaterial({ color: '#d8c7a6' })
-  );
-  bulb.position.set(x, y, -4.92);
-  scene.add(bulb);
-  fairy.push(bulb);
+  fairyDummy.position.set(x, y, -4.92);
+  fairyDummy.updateMatrix();
+  fairyMesh.setMatrixAt(i, fairyDummy.matrix);
+  fairy.push({ x, y, material: fairyMat });
 }
+fairyMesh.instanceMatrix.needsUpdate = true;
+scene.add(fairyMesh);
 // 串灯线缆
 const fairyLineMat = mat('#8c7a60');
 for (let i = 0; i < 15; i++) {
