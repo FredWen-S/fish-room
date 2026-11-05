@@ -1,0 +1,202 @@
+{
+  "browser": "156.0.8078.80",
+  "viewport": [
+    1280,
+    800
+  ],
+  "errors": [],
+  "hours": [
+    {
+      "hour": 10,
+      "calls": 98,
+      "state": "working",
+      "spot": "desk",
+      "arrived": true,
+      "connection": "● 实时",
+      "dpr": 1
+    },
+    {
+      "hour": 18,
+      "calls": 98,
+      "state": "working",
+      "spot": "desk",
+      "arrived": true,
+      "connection": "● 实时",
+      "dpr": 1
+    },
+    {
+      "hour": 22,
+      "calls": 98,
+      "state": "working",
+      "spot": "desk",
+      "arrived": true,
+      "connection": "● 实时",
+      "dpr": 1
+    }
+  ],
+  "geometry": {
+    "bounds": {
+      "min": [
+        -1.1389934703840228,
+        8.940696724635266e-10,
+        -3.585070416626797
+      ],
+      "max": [
+        0.13899347038402282,
+        1.6500000071525573,
+        -2.414929583373203
+      ]
+    },
+    "parts": 16,
+    "collisions": [],
+    "routes": {
+      "desk": 0.9913711933713117,
+      "shelf": 0.4143681984057098,
+      "window": 1.0108043008768512
+    },
+    "batchBoundsError": 1.477669079367562e-7,
+    "batchCount": 1
+  },
+  "interactions": [
+    {
+      "demo": "working",
+      "state": "working",
+      "spot": "shelf",
+      "arrived": true,
+      "action": "research",
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "resting",
+      "state": "resting",
+      "spot": "bed",
+      "arrived": true,
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "error",
+      "state": "error",
+      "spot": "bed",
+      "arrived": true,
+      "action": "dizzy",
+      "held": false,
+      "calls": 98
+    },
+    {
+      "demo": "idle",
+      "state": "idle",
+      "spot": "window",
+      "arrived": true,
+      "held": false,
+      "calls": 98
+    },
+    {
+      "demo": "qq-thinking",
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": false,
+      "action": "alert",
+      "held": false,
+      "calls": 102
+    },
+    {
+      "demo": "qq-replying",
+      "state": "replying",
+      "spot": "desk",
+      "arrived": true,
+      "held": false,
+      "calls": 98
+    },
+    {
+      "demo": "qq-finished",
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": "celebrate",
+      "held": false,
+      "calls": 121
+    },
+    {
+      "demo": "water",
+      "state": "idle",
+      "spot": "plant",
+      "arrived": true,
+      "action": "water",
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "read",
+      "state": "idle",
+      "spot": "shelf",
+      "arrived": true,
+      "action": "read",
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "peek",
+      "state": "idle",
+      "spot": "window",
+      "arrived": true,
+      "action": "peek",
+      "held": false,
+      "calls": 98
+    },
+    {
+      "demo": "dance",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "dance",
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "yawn",
+      "state": "idle",
+      "spot": "beanbag",
+      "arrived": true,
+      "action": "yawn",
+      "held": false,
+      "calls": 99
+    },
+    {
+      "demo": "head",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "pet",
+      "held": false,
+      "calls": 100
+    },
+    {
+      "demo": "body",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "poke",
+      "held": false,
+      "calls": 102
+    },
+    {
+      "demo": "drag",
+      "state": "idle",
+      "spot": "free",
+      "arrived": true,
+      "held": true,
+      "calls": 101
+    },
+    {
+      "demo": "snack",
+      "state": "idle",
+      "spot": "snack",
+      "arrived": true,
+      "action": "eat",
+      "held": false,
+      "calls": 100
+    }
+  ]
+}

@@ -30,7 +30,10 @@ export function createResolutionController(renderer) {
 export function batchStaticRoom(scene, excluded) {
   const groups = new Map();
   scene.updateMatrixWorld(true);
-  for (const mesh of [...scene.children]) {
+  // 组合家具也参与合批；变换烘焙到世界坐标后统一挂在场景根节点。
+  const candidates = [];
+  scene.traverse(mesh => candidates.push(mesh));
+  for (const mesh of candidates) {
     if (!mesh.isMesh || mesh.isInstancedMesh || excluded.has(mesh) || Array.isArray(mesh.material)) continue;
     const { uuid, metadata, textures, images, ...properties } = mesh.material.toJSON();
     const key = JSON.stringify([properties, mesh.castShadow, mesh.receiveShadow, mesh.renderOrder]);
@@ -54,6 +57,6 @@ export function batchStaticRoom(scene, excluded) {
     batch.receiveShadow = first.receiveShadow;
     batch.renderOrder = first.renderOrder;
     scene.add(batch);
-    for (const mesh of meshes) { scene.remove(mesh); mesh.geometry.dispose(); }
+    for (const mesh of meshes) { mesh.removeFromParent(); mesh.geometry.dispose(); }
   }
 }

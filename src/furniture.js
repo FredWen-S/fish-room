@@ -10,11 +10,11 @@ function box(w, h, d, material, x, y, z, parent = scene) {
   return mesh;
 }
 
-const roundedBox = (w, h, d, material, x, y, z, radius = 0.08) => {
+const roundedBox = (w, h, d, material, x, y, z, radius = 0.08, parent = scene) => {
   const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 2, Math.min(radius, w / 2, h / 2, d / 2)), material instanceof THREE.Material ? material : mat(material));
   mesh.position.set(x, y + h / 2, z);
   mesh.castShadow = mesh.receiveShadow = true;
-  scene.add(mesh);
+  parent.add(mesh);
   return mesh;
 };
 
@@ -104,26 +104,30 @@ box(0.28, 0.26, 0.012, '#30384a', 0.72, 0.56, -3.965);
 box(0.12, 0.025, 0.012, '#8fb0f0', 0.72, 0.42, -3.964);
 box(0.05, 0.025, 0.012, '#7cbf8e', 0.72, 0.35, -3.964);
 
-// 办公椅（桌前，朝向显示器）
-const beforeChair = new Set(scene.children);
+// 办公椅：零件使用局部坐标，整组停在桌子左前方，朝向桌面。
+// 桌前打字点和通往书架、窗边的路线仍沿用 SPOTS，无需移动交互家具。
+const chair = new THREE.Group();
+chair.name = '办公椅';
+chair.position.set(-0.5, 0, -3.0);
+chair.rotation.y = -Math.PI / 6;
+scene.add(chair);
 const chairFrame = mat('#353746', { roughness: 0.42, metalness: 0.28 });
 const chairSeat = mat('#6e7895', { roughness: 0.72 });
-roundedBox(0.92, 0.16, 0.82, chairSeat, 1.4, 0.63, -2.95, 0.08);
-roundedBox(0.78, 0.95, 0.14, chairSeat, 1.4, 1.08, -2.59, 0.08);
-box(0.08, 0.12, 0.72, chairFrame, 0.91, 0.72, -2.95);
-box(0.08, 0.12, 0.72, chairFrame, 1.89, 0.72, -2.95);
-cyl(0.07, 0.07, 0.48, chairFrame, 1.4, 0.27, -2.95);
-cyl(0.24, 0.24, 0.06, chairFrame, 1.4, 0.04, -2.95, 16);
-// 五星脚轮
-[[1.4, -2.95], [1.73, -2.95], [1.07, -2.95], [1.4, -2.68], [1.4, -3.22]].forEach(([x, z]) => {
-  box(0.34, 0.035, 0.045, chairFrame, (x + 1.4) / 2, 0.02, (z - 2.95) / 2);
-  cyl(0.055, 0.055, 0.06, '#222532', x, -0.02, z, 10);
-});
-// Tuck the chair under the desk, clear of the character's approach and typing spot.
-scene.children.filter(mesh => !beforeChair.has(mesh)).forEach(mesh => {
-  mesh.position.x -= 1.05;
-  mesh.position.z -= 1.2;
-});
+roundedBox(0.92, 0.16, 0.82, chairSeat, 0, 0.63, 0, 0.08, chair);
+roundedBox(0.78, 0.86, 0.14, chairSeat, 0, 0.79, 0.36, 0.07, chair);
+box(0.08, 0.12, 0.72, chairFrame, -0.49, 0.72, 0, chair);
+box(0.08, 0.12, 0.72, chairFrame, 0.49, 0.72, 0, chair);
+chair.add(cyl(0.07, 0.07, 0.51, chairFrame, 0, 0.12, 0));
+chair.add(cyl(0.13, 0.13, 0.07, chairFrame, 0, 0.08, 0, 16));
+// 五根辐条从中心伸向等角度分布的脚轮，脚轮底面贴地。
+const wheelRadius = 0.46;
+for (let i = 0; i < 5; i++) {
+  const angle = i * Math.PI * 2 / 5;
+  const x = Math.cos(angle) * wheelRadius, z = Math.sin(angle) * wheelRadius;
+  const spoke = box(wheelRadius, 0.045, 0.055, chairFrame, x / 2, 0.07, z / 2, chair);
+  spoke.rotation.y = -angle;
+  chair.add(cyl(0.065, 0.065, 0.08, '#222532', x, 0, z, 10));
+}
 
 // 桌面装饰：马克杯（圆柱 + 把手）
 cyl(0.1, 0.09, 0.2, '#f2b84b', 2.5, 1.05, -4.0);
