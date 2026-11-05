@@ -1,0 +1,85 @@
+{
+  "recordedAt": "2026-11-05T08:13:55.7840193Z",
+  "logicalProcessors": 14,
+  "totalCpu": 53,
+  "topProcesses": [
+    {
+      "Name": "OpenBot#4",
+      "IDProcess": 53188,
+      "PercentProcessorTime": 81
+    },
+    {
+      "Name": "vmmemWSL",
+      "IDProcess": 43568,
+      "PercentProcessorTime": 63
+    },
+    {
+      "Name": "WmiPrvSE#2",
+      "IDProcess": 26864,
+      "PercentProcessorTime": 48
+    },
+    {
+      "Name": "Discord#4",
+      "IDProcess": 18072,
+      "PercentProcessorTime": 42
+    },
+    {
+      "Name": "OpenBot#2",
+      "IDProcess": 64804,
+      "PercentProcessorTime": 42
+    },
+    {
+      "Name": "dwm",
+      "IDProcess": 1872,
+      "PercentProcessorTime": 36
+    },
+    {
+      "Name": "chrome#35",
+      "IDProcess": 42232,
+      "PercentProcessorTime": 33
+    },
+    {
+      "Name": "chrome#39",
+      "IDProcess": 58452,
+      "PercentProcessorTime": 33
+    },
+    {
+      "Name": "pwsh#14",
+      "IDProcess": 48160,
+      "PercentProcessorTime": 30
+    },
+    {
+      "Name": "WeChatAppEx#8",
+      "IDProcess": 64276,
+      "PercentProcessorTime": 27
+    },
+    {
+      "Name": "ToDesk",
+      "IDProcess": 8284,
+      "PercentProcessorTime": 21
+    },
+    {
+      "Name": "OpenBot#6",
+      "IDProcess": 52100,
+      "PercentProcessorTime": 15
+    }
+  ],
+  "servers": [
+    {
+      "LocalPort": 18777,
+      "OwningProcess": 57308
+    },
+    {
+      "LocalPort": 18776,
+      "OwningProcess": 14572
+    },
+    {
+      "LocalPort": 18775,
+      "OwningProcess": 60936
+    },
+    {
+      "LocalPort": 18765,
+      "OwningProcess": 53424
+    }
+  ]
+}

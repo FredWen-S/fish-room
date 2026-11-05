@@ -1,0 +1,4 @@
+{
+  "case": "noscreen",
+  "error": "{'exceptionId': 2, 'text': 'Uncaught (in promise) Error: sampling stalled', 'lineNumber': 4, 'columnNumber': 78, 'scriptId': '51', 'stackTrace': {'callFrames': [{'functionName': '', 'scriptId': '51', 'url': '', 'lineNumber': 3, 'columnNumber': 77}]}, 'exception': {'type': 'object', 'subtype': 'error', 'className': 'Error', 'description': 'Error: sampling stalled\\n    at <anonymous>:4:78', 'objectId': '-132996535186169411.9.1'}}"
+}

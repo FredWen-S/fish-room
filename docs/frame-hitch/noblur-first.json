@@ -1,0 +1,38 @@
+{
+  "fps": 119.19880801191987,
+  "low1": 114.94252873562257,
+  "frames": 1193,
+  "seconds": 10.000100000000002,
+  "frameMs": {
+    "p50": 8.299999999999272,
+    "p95": 8.400000000001455,
+    "p99": 8.700000000000728,
+    "max": 16.80000000000291
+  },
+  "longFrames": [],
+  "lostFocusFrames": 0,
+  "visibility": "visible",
+  "hasFocus": true,
+  "dpr": 1,
+  "dprRange": [
+    1,
+    1
+  ],
+  "calls": [
+    98,
+    98
+  ],
+  "viewport": [
+    1280,
+    800
+  ],
+  "state": "working",
+  "backdrop": "none",
+  "shadows": true,
+  "url": "http://127.0.0.1:18775/?hour=22&debug&noblur",
+  "case": "noblur",
+  "recordedAt": "2026-11-05T08:05:00.932399+00:00",
+  "browser": "Chrome/157.0.8103.39",
+  "events": [],
+  "valid": true
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "name": "devtools-panel-main.json.gz",
+    "bytes": 13854150,
+    "sha256": "5633b7fb3e57372a56fea211d37e932728b3a6d0fa4bbe72923abe50f324b02c"
+  },
+  {
+    "name": "main-hitch-controlled.json.gz",
+    "bytes": 10932011,
+    "sha256": "5360ee8ee9b0d7f8f18712f98c5956826b39f65771bec70c454ee55a1078a2e1"
+  }
+]

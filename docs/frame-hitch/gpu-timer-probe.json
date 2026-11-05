@@ -1,0 +1,23 @@
+{
+  "gpuElapsed": {
+    "samples": 80,
+    "meanMs": 9.135607387499999,
+    "p50Ms": 7.201041,
+    "p99Ms": 29.159791,
+    "maxMs": 29.159791
+  },
+  "cpuRenderWall": {
+    "samples": 644,
+    "meanMs": 1.685559006766503,
+    "p50Ms": 1.600000023841858,
+    "p99Ms": 3.100000023841858,
+    "maxMs": 4.799999952316284
+  },
+  "disjoint": 0,
+  "lostFocusFrames": 0,
+  "fps": 64.14029067621627,
+  "low1": 13.315579227695373,
+  "url": "http://127.0.0.1:18775/?hour=22&debug&noblur",
+  "pixelRatio": 1,
+  "note": "EXT_disjoint_timer_query_webgl2, one query per eight renders; includes possible GPU scheduling/preemption; not a hardware utilization measurement."
+}

@@ -1,0 +1,52 @@
+{
+  "fps": 116.90297053445641,
+  "low1": 59.88023952095548,
+  "frames": 1171,
+  "seconds": 10.008299999999998,
+  "frameMs": {
+    "p50": 8.30000000000291,
+    "p95": 8.5,
+    "p99": 16.700000000000728,
+    "max": 25
+  },
+  "longFrames": [],
+  "lostFocusFrames": 0,
+  "visibility": "visible",
+  "hasFocus": true,
+  "dpr": 1,
+  "dprRange": [
+    1,
+    1
+  ],
+  "calls": [
+    98,
+    98
+  ],
+  "viewport": [
+    1280,
+    800
+  ],
+  "state": "working",
+  "backdrop": "blur(10px)",
+  "shadows": true,
+  "url": "http://127.0.0.1:18777/?hour=22&debug",
+  "case": "main",
+  "recordedAt": "2026-11-05T08:03:58.148971+00:00",
+  "browser": "Chrome/157.0.8103.39",
+  "events": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "timestamp": 1793865808134.076,
+          "url": "http://127.0.0.1:18777/favicon.ico",
+          "networkRequestId": "58452.29"
+        }
+      }
+    }
+  ],
+  "valid": true
+}

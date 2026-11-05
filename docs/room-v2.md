@@ -156,3 +156,8 @@ python server.py
 | 地毯跳舞 | ![地毯跳舞](screenshots/dfe4fdb_action_07_rug_dance.webp) |
 
 收尾状态：分辨率修复、截图压缩、成员视觉回归与真 Chrome 对照数据已归档；用户批准 v2 合并 main。低帧率问题保留为已知问题，另开 perf/frame-hitch 跟进，不将历史测量改写为已达标。
+
+
+## 卡顿调查跟踪
+
+v2 已合并 main。四个独立诊断开关和新的 Performance 轨迹分析保存在 `perf/frame-hitch` 分支的 [frame-hitch.md](frame-hitch.md)。已知的低帧率问题仍未宣告修复；当前证据指向 GPU 进程等待／调度，尚未确定房间代码中的因果项。

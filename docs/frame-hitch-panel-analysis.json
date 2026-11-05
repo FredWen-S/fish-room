@@ -32,5 +32,41 @@
     }
   ],
   "longFrameCount": 3,
-  "inclusiveWarning": "Nested categories may overlap; durations are not additive."
+  "inclusiveWarning": "Nested categories may overlap; durations are not additive.",
+  "fullRecordingSeconds": 25.582675,
+  "fullRecordingLongFrames": [
+    {
+      "offsetMs": 0.0,
+      "frameMs": 77.698
+    },
+    {
+      "offsetMs": 909.438,
+      "frameMs": 84.309
+    },
+    {
+      "offsetMs": 1016.447,
+      "frameMs": 60.088
+    }
+  ],
+  "stableWindow": {
+    "startAfterFirstRafSeconds": 2,
+    "durationSeconds": 10,
+    "longFrames": []
+  },
+  "profilerStartup": {
+    "mainWallMs": 66.126,
+    "nestedCpuProfilerStartWallMs": 61.046,
+    "nestedCpuProfilerStartCpuMs": 56.358
+  },
+  "gpuLongTasks": [
+    {
+      "wallMs": 77.162,
+      "threadCpuMs": 3.718
+    },
+    {
+      "wallMs": 62.285,
+      "threadCpuMs": 3.403
+    }
+  ],
+  "limitations": "Panel was docked, shrinking the scene viewport. GPU-process wall spans include wait/descheduling, not hardware GPU execution time. Original recording is 25.58 seconds; report includes both first 10 seconds and a stable 10-second window starting 2 seconds after first rAF. No stable one-second long-frame periodicity was observed."
 }

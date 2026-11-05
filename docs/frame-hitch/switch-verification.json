@@ -1,0 +1,117 @@
+[
+  {
+    "updates": [
+      {
+        "size": [
+          256,
+          256
+        ],
+        "versionDelta": 2
+      },
+      {
+        "size": [
+          512,
+          320
+        ],
+        "versionDelta": 21
+      }
+    ],
+    "blur": "blur(10px)",
+    "shadows": true,
+    "dpr": 1,
+    "connected": "● 实时",
+    "flag": "default"
+  },
+  {
+    "updates": [
+      {
+        "size": [
+          256,
+          256
+        ],
+        "versionDelta": 2
+      },
+      {
+        "size": [
+          512,
+          320
+        ],
+        "versionDelta": 21
+      }
+    ],
+    "blur": "none",
+    "shadows": true,
+    "dpr": 1,
+    "connected": "● 实时",
+    "flag": "noblur"
+  },
+  {
+    "updates": [
+      {
+        "size": [
+          256,
+          256
+        ],
+        "versionDelta": 0
+      },
+      {
+        "size": [
+          512,
+          320
+        ],
+        "versionDelta": 21
+      }
+    ],
+    "blur": "blur(10px)",
+    "shadows": true,
+    "dpr": 1,
+    "connected": "● 实时",
+    "flag": "noclock"
+  },
+  {
+    "updates": [
+      {
+        "size": [
+          256,
+          256
+        ],
+        "versionDelta": 3
+      },
+      {
+        "size": [
+          512,
+          320
+        ],
+        "versionDelta": 0
+      }
+    ],
+    "blur": "blur(10px)",
+    "shadows": true,
+    "dpr": 1,
+    "connected": "● 实时",
+    "flag": "noscreen"
+  },
+  {
+    "updates": [
+      {
+        "size": [
+          256,
+          256
+        ],
+        "versionDelta": 3
+      },
+      {
+        "size": [
+          512,
+          320
+        ],
+        "versionDelta": 21
+      }
+    ],
+    "blur": "blur(10px)",
+    "shadows": false,
+    "dpr": 1,
+    "connected": "● 实时",
+    "flag": "noshadow"
+  }
+]
