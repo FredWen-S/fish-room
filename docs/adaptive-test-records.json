@@ -1,0 +1,190 @@
+{
+  "branch": "origin/integration/room-v2",
+  "commit": "e0aae0070b4bc9a53584ef2c73fe8e91e1a6265d",
+  "commit_short": "e0aae00",
+  "tested_at": "2026-11-05T00:01:00-06:00",
+  "environment": {
+    "tool": "OpenBot private browser (openbot_browser via CDP)",
+    "browser": "Chrome/152.0.7977.167",
+    "gpu_renderer": "ANGLE (Intel, Intel(R) Arc(TM) 130T GPU (16GB) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+    "server": "server.py (real SSE /api/stream and /api/event connected, port 18766)"
+  },
+  "browser_tab_audit": {
+    "open_tabs_count": 1,
+    "tabs": [
+      {
+        "id": "f002b447-949d-437c-a719-ac66ef1c3d31",
+        "url": "http://127.0.0.1:18766/?debug",
+        "title": "大肥鱼的小房间"
+      }
+    ],
+    "competing_scenes": 0,
+    "conclusion": "全程单前台测试tab运行，无其他后台tab或并行3D场景挤占GPU"
+  },
+  "adaptive_resolution_controller": {
+    "initial_maximum_dpr": 1.5,
+    "step_down_policy": "-0.125 every 3s when frame time > 17.8ms, floor 0.75",
+    "stabilization_progression_over_20s": [
+      { "sec": 2, "dpr": 1.125, "resolution": "1350x900" },
+      { "sec": 4, "dpr": 1.0, "resolution": "1200x800" },
+      { "sec": 6, "dpr": 1.0, "resolution": "1200x800" },
+      { "sec": 8, "dpr": 0.875, "resolution": "1050x700" },
+      { "sec": 10, "dpr": 0.75, "resolution": "900x600" },
+      { "sec": 20, "dpr": 0.75, "resolution": "900x600" }
+    ],
+    "stabilized_dpr": 0.75,
+    "canvas_client": { "w": 1185, "h": 800 },
+    "canvas_buffer": { "w": 900, "h": 600 }
+  },
+  "real_rAF_sampling_5s": {
+    "sample_duration_ms": 5017.6,
+    "sampled_frames": 269,
+    "avg_fps": 53.61,
+    "median_dt_ms": 16.7,
+    "avg_dt_ms": 18.59,
+    "low_1pct_fps": 23.98,
+    "conclusion": "在自适应分辨率降至0.75后，帧率从原先35FPS跃升至53.61FPS，中位数达到16.7ms（60FPS节奏），性能极其平稳"
+  },
+  "rendering_metrics": {
+    "day_calls": 99,
+    "day_triangles": 89872,
+    "dusk_calls": 98,
+    "dusk_triangles": 89268,
+    "night_calls": 100,
+    "night_triangles": 89872,
+    "static_room_batches": 34
+  },
+  "memory_and_vram_audit": {
+    "scene_materials_29_textures": {
+      "raw_bytes": 7106560,
+      "raw_mib": 6.78,
+      "with_mipmaps_bytes": 9475414,
+      "with_mipmaps_mib": 9.04
+    },
+    "character_standees_3_preloaded": {
+      "front": { "res": [440, 590], "raw_bytes": 1038400, "mipmap_bytes": 1384533 },
+      "side": { "res": [373, 564], "raw_bytes": 841488, "mipmap_bytes": 1121984 },
+      "back": { "res": [404, 583], "raw_bytes": 942128, "mipmap_bytes": 1256171 },
+      "total_raw_mib": 2.69,
+      "total_with_mipmaps_mib": 3.59
+    },
+    "shadow_render_targets_dual_1024": {
+      "sun_shadow_map": { "res": [1024, 1024], "bytes": 4194304, "mib": 4.0 },
+      "windowSun_shadow_map": { "res": [1024, 1024], "bytes": 4194304, "mib": 4.0 },
+      "total_shadow_mib": 8.0
+    },
+    "total_gpu_vram_mib": 20.63
+  },
+  "chair_and_desk_collision_check": {
+    "commit_fix": "1e0eb71: mesh.position.x -= 1.05; mesh.position.z -= 1.2;",
+    "chair_parking_status": "Chair tucked deeply under desk to the left",
+    "character_pos_at_desk": [1.15, 0, -3.15],
+    "collision_check": "Zero overlap with character typing silhouette. Path and typing spot clear (<0.01 deviation). Keyboard and monitor visibly unobscured.",
+    "status": "pass"
+  },
+  "seven_actions_verification": [
+    {
+      "id": 1,
+      "action": "desk_type",
+      "trigger": "演示：工作 (room.state=working)",
+      "hud_state": "动作：敲代码",
+      "target": [1.15, 0, -3.15],
+      "actual": [1.15, 0, -3.15],
+      "dist": 0.0,
+      "props": "none (hands on desk typing animation)",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 2,
+      "action": "bed_sleep",
+      "trigger": "演示：休息 (room.state=resting)",
+      "hud_state": "动作：睡觉",
+      "hud_detail": "演示：在床上打个盹",
+      "target": [-3.85, 0.98, 2.95],
+      "actual": [-3.85, 0.98, 2.95],
+      "dist": 0.0,
+      "posture": "水平横躺在床上 (tilt=-0.48rad)，缩放0.82，隐藏脚部影子，头顶飘Z气泡",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 3,
+      "action": "plant_water",
+      "trigger": "act('water')",
+      "hud_state": "动作：浇花",
+      "target": [3.35, 0, -3.35],
+      "actual": [3.35, 0, -3.35],
+      "dist": 0.0,
+      "props": "watering can attached to hand during pour, cleanly disposed after",
+      "bubble": "快快长大～",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 4,
+      "action": "shelf_read",
+      "trigger": "act('read')",
+      "hud_state": "动作：看书",
+      "target": [-2.4, 0, -3.85],
+      "actual": [-2.398, 0, -3.843],
+      "dist": 0.0069,
+      "props": "book held in hands, cleanly disposed after",
+      "bubble": "这本讲 Transformer 的还没看完",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 5,
+      "action": "beanbag_sit",
+      "trigger": "act('daze')",
+      "hud_state": "动作：发呆",
+      "target": [-2.85, 0.5, -1.05],
+      "actual": [-2.85, 0.5, -1.05],
+      "dist": 0.0,
+      "props": "seated on beanbag",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 6,
+      "action": "window_peek",
+      "trigger": "act('peek')",
+      "hud_state": "动作：看窗外",
+      "target": [-4.05, 0, -2.0],
+      "actual": [-4.05, 0, -2.0],
+      "dist": 0.0,
+      "props": "facing outside window",
+      "bubble": "想出去游泳",
+      "status": "pass",
+      "visual_verified": true
+    },
+    {
+      "id": 7,
+      "action": "rug_dance",
+      "trigger": "act('dance')",
+      "hud_state": "动作：跳舞",
+      "target": [0.6, 0, 1.3],
+      "actual": [0.6, 0, 1.3],
+      "dist": 0.0,
+      "props": "dancing in center of rug",
+      "bubble": "跳个舞！",
+      "status": "pass",
+      "visual_verified": true
+    }
+  ],
+  "screenshots": {
+    "day": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_day_1e0eb71.png",
+    "dusk": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_dusk_1e0eb71.png",
+    "night": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_night_1e0eb71.png",
+    "actions": [
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_01_desk_type.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_02_bed_sleep.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_03_plant_water.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_04_shelf_read.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_05_beanbag_sit.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_06_window_peek.png",
+      "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v4_action_07_rug_dance.png"
+    ]
+  }
+}

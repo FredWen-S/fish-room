@@ -1,0 +1,43 @@
+{
+  "fps": 66.92227256883932,
+  "low1": 10.90512540894428,
+  "frameMs": {
+    "p50": 8.39999999999418,
+    "p95": 41.70000000001164,
+    "p99": 91.69999999998254,
+    "max": 150.09999999997672
+  },
+  "pixelRatio": 1,
+  "pixelRatioRange": [
+    1,
+    1
+  ],
+  "screenDpr": 1,
+  "viewport": [
+    1280,
+    800
+  ],
+  "buffer": [
+    1280,
+    800
+  ],
+  "drawCalls": [
+    99,
+    100
+  ],
+  "frames": 673,
+  "seconds": 10.0415,
+  "visibility": "visible",
+  "hasFocus": true,
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/157.0.0.0 Safari/537.36",
+  "gpu": "ANGLE (Intel, Intel(R) Arc(TM) 130T GPU (16GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "url": "http://127.0.0.1:18775/?hour=22&debug",
+  "version": "integration",
+  "foregroundBefore": 10164296,
+  "foregroundAfter": 10164296,
+  "events": [],
+  "baselineNightOverride": false,
+  "viewportMode": "CDP device metrics 1280x800 at DPR 1; headed foreground Chrome",
+  "recordedAt": "2026-11-05T07:42:37.365843+00:00",
+  "sourceCommit": "dfe4fdba7fdf7b742974a652a8cc0d9cb4505294"
+}
