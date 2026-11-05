@@ -1,0 +1,36 @@
+{
+  "source": "devtools-panel-main.json.gz",
+  "windowSeconds": 10,
+  "rendererThread": [
+    58452,
+    24324
+  ],
+  "longFrames": [
+    {
+      "offsetMs": 0.0,
+      "frameMs": 77.698,
+      "compositorTaskMs": 10.818,
+      "mainScriptInclusiveMs": 75.96,
+      "gpuTaskInclusiveMs": 0.393,
+      "mainRenderingMs": 0.895
+    },
+    {
+      "offsetMs": 909.438,
+      "frameMs": 84.309,
+      "compositorTaskMs": 3.397,
+      "gpuTaskInclusiveMs": 78.932,
+      "mainScriptInclusiveMs": 2.281,
+      "mainRenderingMs": 0.394
+    },
+    {
+      "offsetMs": 1016.447,
+      "frameMs": 60.088,
+      "gpuTaskInclusiveMs": 58.109,
+      "compositorTaskMs": 1.752,
+      "mainScriptInclusiveMs": 1.896,
+      "mainRenderingMs": 0.625
+    }
+  ],
+  "longFrameCount": 3,
+  "inclusiveWarning": "Nested categories may overlap; durations are not additive."
+}

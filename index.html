@@ -31,6 +31,7 @@
     border-radius: 18px; box-shadow: var(--shadow); backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
   }
+  html.noblur .card { backdrop-filter: none; -webkit-backdrop-filter: none; }
 
   /* 状态卡 */
   .status { top: 16px; left: 16px; width: min(340px, calc(100% - 32px)); padding: 16px 18px 14px; }
@@ -156,6 +157,9 @@ import { createLighting } from './src/lighting.js';
 import { batchStaticRoom, createResolutionController } from './src/geometry.js';
 const V3 = THREE.Vector3;
 const $ = (id) => document.getElementById(id);
+// Independent diagnostic switches; combine only for explicit experiments.
+const perfFlags = new URLSearchParams(location.search);
+document.documentElement.classList.toggle('noblur', perfFlags.has('noblur'));
 
 const STATES = {
   idle:     { label: '闲逛',   color: '#6fb487' },
@@ -170,7 +174,7 @@ const SOURCES = { astrbot: 'QQ 大肥鱼', room: '小房间', demo: '演示', 'r
 // ------------------------------------------------------------------ 渲染器与相机
 const renderer = new THREE.WebGLRenderer({ canvas: $('scene'), antialias: true, alpha: true });
 const updateResolution = createResolutionController(renderer);
-renderer.shadowMap.enabled = true;
+renderer.shadowMap.enabled = !perfFlags.has('noshadow');
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
@@ -1024,13 +1028,16 @@ function step(dt) {
   sun.intensity = light.sun; hemi.intensity = light.hemi; lampLight.intensity = light.lamp;
   shadeMat.emissiveIntensity = light.lamp / 3;
   fairy.forEach((b, i) => b.material.color.setHSL(0.11, 0.8, 0.55 + light.fairy * (0.25 + 0.12 * Math.sin(t * 2 + i))));
-  if (t - lastScreen > 0.1) { drawScreen(t); lastScreen = t; }
+  if (!perfFlags.has('noscreen') && t - lastScreen > 0.1) { drawScreen(t); lastScreen = t; }
   const sec = new Date().getSeconds();
   if (sec !== lastClock) {
-    drawClock(); lastClock = sec;
-    $('clock').textContent = new Date().toTimeString().slice(0, 5);
-    const mins = Math.floor((Date.now() / 1000 - room.since) / 60);
-    $('since').textContent = mins < 1 ? '刚刚开始' : mins < 60 ? `已经 ${mins} 分钟` : `已经 ${Math.floor(mins / 60)} 小时 ${mins % 60} 分`;
+    lastClock = sec;
+    if (!perfFlags.has('noclock')) {
+      drawClock();
+      $('clock').textContent = new Date().toTimeString().slice(0, 5);
+      const mins = Math.floor((Date.now() / 1000 - room.since) / 60);
+      $('since').textContent = mins < 1 ? '刚刚开始' : mins < 60 ? `已经 ${mins} 分钟` : `已经 ${Math.floor(mins / 60)} 小时 ${mins % 60} 分`;
+    }
     const minute = new Date().getMinutes();
     if (minute !== lastSky) { drawSky(); applyDayClass(); lastSky = minute; }
   }
@@ -1043,7 +1050,7 @@ function frame(timestamp) {
   renderer.render(scene, camera);
   requestAnimationFrame(frame);
 }
-drawSky(); drawClock(); applyDayClass();
+drawSky(); drawClock(); drawScreen(0); applyDayClass();
 if (location.search.includes('debug')) window.__room = { THREE, renderer, scene, camera, char, W, goTo, SPOTS, room, resize, act, dropSnack,
   run(sec) { for (let i = 0; i < sec * 30; i++) step(1 / 30); renderer.render(scene, camera); },
   look(x, y, z, zoom) { camera.zoom = zoom; camera.position.set(x + 13, y + 11.5, z + 13); camera.lookAt(x, y, z); camera.updateProjectionMatrix(); renderer.render(scene, camera); } };
