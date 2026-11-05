@@ -69,19 +69,16 @@ const floorTex = canvasTexture(512, 512, (ctx, w, h) => {
 floorTex.tex.wrapS = floorTex.tex.wrapT = THREE.RepeatWrapping;
 floorTex.tex.repeat.set(2, 2);
 
-// 1b. 地板 Roughness Map（板条缎面光泽 ~0.45，缝隙与纹理粗糙 ~0.85）
+// 1b. 地板 Roughness Map（数据贴图必须使用 THREE.NoColorSpace）
 const floorRoughnessTex = canvasTexture(512, 512, (ctx, w, h) => {
-  // 基础缎面漫射度（中灰）
   ctx.fillStyle = '#787878'; ctx.fillRect(0, 0, w, h);
   plankLayout.forEach((rowPlanks, row) => {
     const y = row * rowH;
     rowPlanks.forEach(({ x, len }, idx) => {
-      // 每块木板有轻微色光光泽差异
       const plankRough = 105 + ((row * 5 + idx * 7) % 30);
       ctx.fillStyle = `rgb(${plankRough},${plankRough},${plankRough})`;
       ctx.fillRect(x + 1, y + 1, len - 2, rowH - 2);
 
-      // 木纹轻微粗糙度凹凸细丝
       ctx.save();
       ctx.beginPath(); ctx.rect(x, y, len, rowH); ctx.clip();
       for (let g = 0; g < 10; g++) {
@@ -92,7 +89,6 @@ const floorRoughnessTex = canvasTexture(512, 512, (ctx, w, h) => {
       }
       ctx.restore();
 
-      // 接缝高粗糙度（哑光无反光）
       ctx.fillStyle = '#dedede';
       ctx.fillRect(x + len - 2, y, 3, rowH);
     });
@@ -100,21 +96,19 @@ const floorRoughnessTex = canvasTexture(512, 512, (ctx, w, h) => {
     ctx.fillRect(0, y + rowH - 2, w, 3);
   });
 });
+floorRoughnessTex.tex.colorSpace = THREE.NoColorSpace;
 floorRoughnessTex.tex.wrapS = floorRoughnessTex.tex.wrapT = THREE.RepeatWrapping;
 floorRoughnessTex.tex.repeat.set(2, 2);
 
-// 1c. 地板 Normal Map（轻微倒角斜切法线与木纹法向扰动）
+// 1c. 地板 Normal Map（数据贴图必须使用 THREE.NoColorSpace）
 const floorNormalTex = canvasTexture(512, 512, (ctx, w, h) => {
-  // 中性法线基底：RGB (128, 128, 255) 即 +Z 方向
   ctx.fillStyle = '#8080ff'; ctx.fillRect(0, 0, w, h);
   plankLayout.forEach((rowPlanks, row) => {
     const y = row * rowH;
     rowPlanks.forEach(({ x, len }) => {
-      // 垂直接缝法线倒角：左侧朝右倾斜(+X -> R>128)，右侧朝左倾斜(-X -> R<128)
       ctx.fillStyle = 'rgb(160, 128, 255)'; ctx.fillRect(x + len - 2, y, 1, rowH);
       ctx.fillStyle = 'rgb(96, 128, 255)'; ctx.fillRect(x + len, y, 1, rowH);
 
-      // 微细木纹法线随机轻扰
       for (let g = 0; g < 6; g++) {
         const gy = y + rand(4, rowH - 4);
         ctx.strokeStyle = rand(0, 1) > 0.5 ? 'rgb(134, 134, 255)' : 'rgb(122, 122, 255)';
@@ -122,11 +116,11 @@ const floorNormalTex = canvasTexture(512, 512, (ctx, w, h) => {
         ctx.beginPath(); ctx.moveTo(x, gy); ctx.lineTo(x + len, gy + rand(-2, 2)); ctx.stroke();
       }
     });
-    // 水平接缝法线倒角：上侧朝下(+Y -> G>128)，下侧朝上(-Y -> G<128)
     ctx.fillStyle = 'rgb(128, 160, 255)'; ctx.fillRect(0, y + rowH - 2, w, 1);
     ctx.fillStyle = 'rgb(128, 96, 255)'; ctx.fillRect(0, y, w, 1);
   });
 });
+floorNormalTex.tex.colorSpace = THREE.NoColorSpace;
 floorNormalTex.tex.wrapS = floorNormalTex.tex.wrapT = THREE.RepeatWrapping;
 floorNormalTex.tex.repeat.set(2, 2);
 
@@ -400,7 +394,17 @@ function getSpecializedMaterial(material, w, h, d, x, y, z) {
 }
 
 function box(w, h, d, material, x, y, z, parent = scene) {
-  const finalMat = getSpecializedMaterial(material, w, h, d, x, y, z);
+  let finalMat = getSpecializedMaterial(material, w, h, d, x, y, z);
+  // 当识别到地板几何体（w >= 9.9 且 d >= 9.9）或传入带有 floorTex 的材质时，自动挂载 roughnessMap 与 normalMap
+  if (material instanceof THREE.Material && (material.map === floorTex.tex || (w >= 9.9 && d >= 9.9 && y < 0))) {
+    material.roughnessMap = floorRoughnessTex.tex;
+    material.normalMap = floorNormalTex.tex;
+    material.normalScale = new THREE.Vector2(0.35, 0.35);
+    material.roughness = 0.52;
+    material.metalness = 0.0;
+    material.needsUpdate = true;
+    finalMat = material;
+  }
   const mesh = shade(new THREE.Mesh(new THREE.BoxGeometry(w, h, d), finalMat));
   // 墙壁不投射阴影，保证窗外直射阳光与月光能够穿透并在房间地板投影出清晰窗格
   const colStr = String(material).toLowerCase();

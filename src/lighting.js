@@ -80,7 +80,7 @@ const fairyLight = new THREE.PointLight('#ffba58', 0, 6.5, 1.8);
 fairyLight.position.set(-0.5, 4.15, -4.6);
 scene.add(fairyLight);
 
-// ACES Filmic Tone Mapping 渲染钩子
+// ACES Filmic Tone Mapping 渲染钩子与平滑灯光更新
 scene.onBeforeRender = (renderer) => {
   if (renderer.toneMapping !== THREE.ACESFilmicToneMapping) {
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -88,6 +88,12 @@ scene.onBeforeRender = (renderer) => {
   const d = daylight();
   // 昼夜动态曝光控制：日间明媚通透(1.05)，夜间温厚饱满(1.16)
   renderer.toneMappingExposure = 1.05 + (1 - d) * 0.11;
+
+  // 使用在主循环中已完成平滑插值的 light 字典值同步更新附加光源，杜绝休息状态切换与昼夜突变
+  if (light.windowSun !== undefined) windowSun.intensity = light.windowSun;
+  if (light.moon !== undefined) moon.intensity = light.moon;
+  if (light.lampBounce !== undefined) lampBounce.intensity = light.lampBounce;
+  fairyLight.intensity = (light.fairy ?? 0) * 1.8;
 };
 
 function daylight(date = new Date()) {
@@ -162,19 +168,17 @@ function drawSky() {
   sky.tex.needsUpdate = true;
 }
 
-const light = { sun: 1.35, hemi: 0.82, lamp: 0, fairy: 0 };
+const light = { sun: 1.35, hemi: 0.82, lamp: 0, fairy: 0, windowSun: 1.75, moon: 0, lampBounce: 0 };
 function lightTargets() {
   const d = daylight(), resting = room().state === 'resting';
-  // 动态联动窗外阳光窗格投影、月光、落地灯与串灯漫射
-  windowSun.intensity = d * 1.75 * (resting ? 0.6 : 1);
-  moon.intensity = (1 - d) * 0.48 * (resting ? 0.6 : 1);
-  lampBounce.intensity = (1 - d) * 1.35 * (resting ? 0.65 : 1);
-  fairyLight.intensity = Math.max(1 - d, resting ? 0.85 : 0) * 1.8;
   return {
     sun: (0.16 + 1.25 * d) * (resting ? 0.52 : 1),
     hemi: (0.36 + 0.46 * d) * (resting ? 0.6 : 1),
     lamp: resting ? 2.8 : (1 - d) * 3.4,
     fairy: Math.max(1 - d, resting ? 0.85 : 0),
+    windowSun: d * 1.75 * (resting ? 0.6 : 1),
+    moon: (1 - d) * 0.48 * (resting ? 0.6 : 1),
+    lampBounce: (1 - d) * 1.35 * (resting ? 0.65 : 1),
   };
 }
 
