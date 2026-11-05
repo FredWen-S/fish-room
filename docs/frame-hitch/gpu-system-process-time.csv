@@ -1,0 +1,11 @@
+process,pid,count,gpu_time_us,share_of_table_gpu_time_percent
+chrome.exe,43040,3868,7013017.5,97.48
+msedge.exe,45320,455,144846.5,2.01
+msedge.exe,31420,39,19776.4,0.27
+OpenBot.exe,55028,9,8537.1,0.12
+dwm.exe,1872,3,5018.1,0.07
+msedge.exe,54188,9,2156,0.03
+chrome.exe,2580,2,554,0.01
+csrss.exe,1276,1,409.5,0.01
+WeChatAppEx.exe,28968,1,193.6,0
+explorer.exe,4316,1,48.7,0

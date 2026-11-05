@@ -1,0 +1,209 @@
+{
+  "autoUpdate": false,
+  "staticShadowDrawsInFiveRenders": 0,
+  "settledShadowDrawsInFiveRenders": 0,
+  "phases": [
+    {
+      "label": "static",
+      "match": true,
+      "cached": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "live": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    },
+    {
+      "label": "plant-bounce",
+      "match": true,
+      "cached": [
+        {
+          "id": 300,
+          "hash": 2630486260,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "live": [
+        {
+          "id": 300,
+          "hash": 2630486260,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    },
+    {
+      "label": "plant-settled",
+      "match": true,
+      "cached": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "live": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    },
+    {
+      "label": "moving-envelope",
+      "match": true,
+      "cached": [
+        {
+          "id": 300,
+          "hash": 2951991423,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1087253753,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "live": [
+        {
+          "id": 300,
+          "hash": 2951991423,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1087253753,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    },
+    {
+      "label": "envelope-removed",
+      "match": true,
+      "cached": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ],
+      "live": [
+        {
+          "id": 300,
+          "hash": 3175814000,
+          "size": [
+            1024,
+            1024
+          ]
+        },
+        {
+          "id": 303,
+          "hash": 1222265602,
+          "size": [
+            1024,
+            1024
+          ]
+        }
+      ]
+    }
+  ],
+  "eventAccepted": true,
+  "hookedCasters": 59
+}

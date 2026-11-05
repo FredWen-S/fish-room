@@ -1,0 +1,13 @@
+{
+  "fps": 119.6988030119699,
+  "low1": 113.63636363632605,
+  "frames": 1198,
+  "seconds": 10.000099999999998,
+  "dpr": 1,
+  "state": "working",
+  "url": "http://127.0.0.1:18777/?hour=22&debug",
+  "lostFocusFrames": 0,
+  "longFrames": [],
+  "gpuTraceStartedUtc": "2026-11-05T15:49:39.0540954Z",
+  "recordedAt": "2026-11-05T15:49:49.090668+00:00"
+}

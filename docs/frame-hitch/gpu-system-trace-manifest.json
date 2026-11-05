@@ -1,0 +1,12 @@
+{
+  "trace": "gpu-system-10s.etl",
+  "bytes": 724566016,
+  "sha256": "d58607f1592f247b8d54999d5ec326f7a1577feac335defc3d39ea82830362dc",
+  "sampleSeconds": 10.0001,
+  "etlTimelineSeconds": 16.6919047,
+  "rendererGpuProcess": 43040,
+  "rendererBrowserParent": 49540,
+  "tableTotalGpuTimeUs": 7194557.4,
+  "tableTotalPackets": 4388,
+  "note": "WPA entire-trace GPU Utilization (FM), GPU by Adapter/Process. Percentages are share of table GPU Time, not machine GPU utilization. ETL remains local because it contains system-wide metadata."
+}

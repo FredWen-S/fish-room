@@ -1,0 +1,206 @@
+{
+  "actualRendering": {
+    "fps": 59.897546293812525,
+    "low1": 11.876484570658818,
+    "frames": 602
+  },
+  "fps": 59.9005312310008,
+  "low1": 12.004801920767887,
+  "frames": 602,
+  "seconds": 10.033299999999995,
+  "frameMs": {
+    "p50": 8.400000000001455,
+    "p95": 57.89999999999782,
+    "p99": 83.30000000000291,
+    "max": 108.59999999999854
+  },
+  "longFrames": [
+    {
+      "offsetMs": 508.3999999999978,
+      "frameMs": 58.29999999999927
+    },
+    {
+      "offsetMs": 725,
+      "frameMs": 66.79999999999927
+    },
+    {
+      "offsetMs": 1325,
+      "frameMs": 50.099999999998545
+    },
+    {
+      "offsetMs": 1408.2999999999993,
+      "frameMs": 50.099999999998545
+    },
+    {
+      "offsetMs": 1541.5999999999985,
+      "frameMs": 58.400000000001455
+    },
+    {
+      "offsetMs": 1625,
+      "frameMs": 66.79999999999927
+    },
+    {
+      "offsetMs": 2416.7999999999993,
+      "frameMs": 58.20000000000073
+    },
+    {
+      "offsetMs": 2625,
+      "frameMs": 50.099999999998545
+    },
+    {
+      "offsetMs": 3083.5,
+      "frameMs": 58.19999999999709
+    },
+    {
+      "offsetMs": 3291.899999999998,
+      "frameMs": 74.79999999999927
+    },
+    {
+      "offsetMs": 3533.399999999998,
+      "frameMs": 58.400000000001455
+    },
+    {
+      "offsetMs": 3658.7999999999993,
+      "frameMs": 57.89999999999782
+    },
+    {
+      "offsetMs": 4100,
+      "frameMs": 58.5
+    },
+    {
+      "offsetMs": 5683.399999999998,
+      "frameMs": 66.60000000000218
+    },
+    {
+      "offsetMs": 5908.299999999999,
+      "frameMs": 58.39999999999782
+    },
+    {
+      "offsetMs": 6150.399999999998,
+      "frameMs": 66.60000000000218
+    },
+    {
+      "offsetMs": 6283.5,
+      "frameMs": 74.89999999999782
+    },
+    {
+      "offsetMs": 6400,
+      "frameMs": 66.69999999999709
+    },
+    {
+      "offsetMs": 6550,
+      "frameMs": 58.29999999999927
+    },
+    {
+      "offsetMs": 6666.5999999999985,
+      "frameMs": 58.599999999998545
+    },
+    {
+      "offsetMs": 6891.5999999999985,
+      "frameMs": 50.099999999998545
+    },
+    {
+      "offsetMs": 7125,
+      "frameMs": 58.29999999999927
+    },
+    {
+      "offsetMs": 7225.199999999997,
+      "frameMs": 66.5
+    },
+    {
+      "offsetMs": 7350,
+      "frameMs": 58.39999999999782
+    },
+    {
+      "offsetMs": 7600,
+      "frameMs": 58.29999999999927
+    },
+    {
+      "offsetMs": 7691.699999999997,
+      "frameMs": 83.30000000000291
+    },
+    {
+      "offsetMs": 7941.699999999997,
+      "frameMs": 50.10000000000218
+    },
+    {
+      "offsetMs": 8183.299999999999,
+      "frameMs": 66.79999999999927
+    },
+    {
+      "offsetMs": 8525,
+      "frameMs": 100.09999999999854
+    },
+    {
+      "offsetMs": 8650.099999999999,
+      "frameMs": 108.59999999999854
+    },
+    {
+      "offsetMs": 8866.699999999997,
+      "frameMs": 108.40000000000146
+    },
+    {
+      "offsetMs": 9141.599999999999,
+      "frameMs": 75.09999999999854
+    },
+    {
+      "offsetMs": 9233.399999999998,
+      "frameMs": 66.60000000000218
+    },
+    {
+      "offsetMs": 9600,
+      "frameMs": 91.59999999999854
+    },
+    {
+      "offsetMs": 9708.399999999998,
+      "frameMs": 91.60000000000218
+    },
+    {
+      "offsetMs": 9833.3,
+      "frameMs": 50.099999999998545
+    },
+    {
+      "offsetMs": 9925.099999999999,
+      "frameMs": 108.19999999999709
+    }
+  ],
+  "lostFocusFrames": 0,
+  "visibility": "visible",
+  "hasFocus": true,
+  "dpr": 1,
+  "dprRange": [
+    1,
+    1
+  ],
+  "calls": [
+    98,
+    98
+  ],
+  "viewport": [
+    1280,
+    800
+  ],
+  "state": "working",
+  "backdrop": "blur(10px)",
+  "shadows": true,
+  "url": "http://127.0.0.1:18775/?hour=22&debug",
+  "case": "fixed",
+  "recordedAt": "2026-11-05T16:11:11.139271+00:00",
+  "browser": "Chrome/157.0.8103.39",
+  "events": [
+    {
+      "method": "Log.entryAdded",
+      "params": {
+        "entry": {
+          "source": "network",
+          "level": "error",
+          "text": "Failed to load resource: the server responded with a status of 404 (Not Found)",
+          "timestamp": 1793895041338.375,
+          "url": "http://127.0.0.1:18775/favicon.ico",
+          "networkRequestId": "16436.48"
+        }
+      }
+    }
+  ],
+  "valid": true
+}
