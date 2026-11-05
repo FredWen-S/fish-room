@@ -195,6 +195,14 @@ addEventListener('resize', resize); resize();
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 const { mat, box, cyl, blob, canvasTexture, floorTex } = createMaterials(scene, rand, pick);
+function wrapText(ctx, text, maxWidth) {
+  const lines = []; let line = '';
+  for (const ch of String(text)) {
+    if (ch === '\n') { lines.push(line); line = ''; continue; }
+    if (ctx.measureText(line + ch).width > maxWidth && line) { lines.push(line); line = ch; } else line += ch;
+  }
+  lines.push(line); return lines;
+}
 const lerpAngle = (a, b, t) => a + ((((b - a + Math.PI) % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2) - Math.PI) * t;
 const hhmm = (ts) => new Date(ts * 1000).toTimeString().slice(0, 5);
 
