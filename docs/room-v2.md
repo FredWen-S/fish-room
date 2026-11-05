@@ -46,11 +46,11 @@ ACES 色调映射配合环境光、日光、窗向投影光与夜间暖色点光
 
 ### 改动前：白天
 
-![基线白天](screenshots/before-day.png)
+![基线白天](screenshots/before-day.webp)
 
 ### 改动前：夜晚
 
-![基线夜晚](screenshots/before-night.png)
+![基线夜晚](screenshots/before-night.webp)
 
 集成验收需要覆盖桌前打字、床上睡觉、浇花、书架阅读、懒人沙发坐姿、看窗外、地毯跳舞七个动作，并检查 HUB 到各 near 点的路线。
 
@@ -64,9 +64,9 @@ ACES 色调映射配合环境光、日光、窗向投影光与夜间暖色点光
 
 纹理报告约 8.74MiB 材质 + 1.32MiB 当前角色纹理，阴影渲染目标另计约 8MiB；这不是全部预加载角色视图的最终显存审计。家具集成后必须重新测量。
 
-![材质分支白天](screenshots/materials-day.png)
+![材质分支白天](screenshots/materials-day.webp)
 
-![材质分支夜晚](screenshots/materials-night.png)
+![材质分支夜晚](screenshots/materials-night.webp)
 
 ## 集成结果与对比
 
@@ -74,8 +74,8 @@ ACES 色调映射配合环境光、日光、窗向投影光与夜间暖色点光
 
 | 时段 | 改动前 | 集成后 |
 | --- | --- | --- |
-| 白天 | ![改动前白天](screenshots/before-day.png) | ![集成后白天](screenshots/after-day.png) |
-| 夜晚 | ![改动前夜晚](screenshots/before-night.png) | ![集成后夜晚](screenshots/after-night.png) |
+| 白天 | ![改动前白天](screenshots/before-day.webp) | ![集成后白天](screenshots/after-day.webp) |
+| 夜晚 | ![改动前夜晚](screenshots/before-night.webp) | ![集成后夜晚](screenshots/after-night.webp) |
 
 构图受基线 1280×800 与集成截图 1920×1280 的截图尺寸差异影响，不应作为逐像素对照。
 
@@ -98,7 +98,7 @@ ACES 色调映射配合环境光、日光、窗向投影光与夜间暖色点光
 
 通过演示“休息”触发真实服务状态，确认 `room.state=resting`、到达床位后角色横躺、缩放 0.82、Z 字符与 HUD 睡觉正常，补齐七动作验收。
 
-![真实休息状态横躺睡觉](screenshots/sleep-verified.png)
+![真实休息状态横躺睡觉](screenshots/sleep-verified.webp)
 
 ## 运行
 
