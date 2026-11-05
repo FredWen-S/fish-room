@@ -194,7 +194,7 @@ addEventListener('resize', resize); resize();
 // ------------------------------------------------------------------ 小工具
 const rand = (a, b) => a + Math.random() * (b - a);
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
-const { mat, box, cyl, blob, canvasTexture, floorTex } = createMaterials(scene, rand, pick);
+const { mat, box, cyl, blob, canvasTexture, floorTex, floorMaterial, materials } = createMaterials(scene, rand, pick);
 function wrapText(ctx, text, maxWidth) {
   const lines = []; let line = '';
   for (const ch of String(text)) {
@@ -207,7 +207,7 @@ const lerpAngle = (a, b, t) => a + ((((b - a + Math.PI) % (Math.PI * 2)) + Math.
 const hhmm = (ts) => new Date(ts * 1000).toTimeString().slice(0, 5);
 
 // ------------------------------------------------------------------ 房间
-const roomTools = { mat, box, cyl, blob, canvasTexture, floorTex, rand, pick };
+const roomTools = { mat, box, cyl, blob, canvasTexture, floorTex, floorMaterial, materials, rand, pick };
 const { sky, drawClock } = createRoom(scene, roomTools);
 const { screen, screenGlow, shadeMat, lampLight, plantLeaves, fairy } = createFurniture(scene, roomTools);
 const { sun, hemi, daylight, drawSky, light, lightTargets, applyDayClass } = createLighting(scene, sky, () => room, rand);
