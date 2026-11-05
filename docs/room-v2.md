@@ -1,6 +1,6 @@
 # 大肥鱼的小房间 v2
 
-当前状态：模块拆分已合并 main；家具和材质已依次合入 `integration/room-v2`，尚未合并 main。动作、Draw call、加载和材质纹理预算通过；用户已批准将 v2 合并 main。1% low 未达标列为原版同样存在的已知问题，另在 perf/frame-hitch 定位；测试结果见文末。
+当前状态：v2 已通过 `58816d0` 合并并推送 main。动作、Draw call、加载和材质纹理预算通过；1% low 未达标列为原版同样存在的已知问题，另在 perf/frame-hitch 定位；测试结果见文末。
 
 ## 设计
 
