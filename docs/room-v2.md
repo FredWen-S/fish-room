@@ -1,6 +1,6 @@
 # 大肥鱼的小房间 v2
 
-当前状态：模块拆分已合并 main；家具和材质已依次合入 `integration/room-v2`，尚未合并 main。Draw call、加载和材质纹理预算通过；OpenBot 浏览器内连续帧率未达到 60 FPS，性能验收仍未通过。真实休息状态的横躺睡觉截图也待补验，不能以站立打瞌睡代替。
+当前状态：模块拆分已合并 main；家具和材质已依次合入 `integration/room-v2`，尚未合并 main。动作、Draw call、加载和材质纹理预算通过；OpenBot 浏览器内连续帧率未达到 60 FPS，性能验收仍未通过。
 
 ## 设计
 
@@ -93,6 +93,12 @@ ACES 色调映射配合环境光、日光、窗向投影光与夜间暖色点光
 `e0aae00` 增加绘制分辨率控制：最大像素比 1.5，持续超出帧预算时以 0.125 递减，最低 0.75；只影响绘制缓冲，布局与角色逻辑保持原样。主管在最低像素比下采样 240 帧约 52.27 FPS，依然未通过 60 FPS 门槛。
 
 原始报告保存在 [integration-test-records.json](integration-test-records.json) 与 [raf-dpr-benchmark.json](raf-dpr-benchmark.json)。报告中“GPU 能力 189 FPS”“完整通过”等早期结论不予采纳，以本文门槛状态和实际 rAF 数据为准。
+
+最新自适应版本经视觉测试等待 20 秒后，在 DPR 0.75、900×600 绘制缓冲下连续约 5 秒采样 269 帧，平均 53.61 FPS、1% low 23.98 FPS。中位帧时间 16.7ms 不代表持续 60 FPS。记录见 [adaptive-test-records.json](adaptive-test-records.json)。
+
+通过演示“休息”触发真实服务状态，确认 `room.state=resting`、到达床位后角色横躺、缩放 0.82、Z 字符与 HUD 睡觉正常，补齐七动作验收。
+
+![真实休息状态横躺睡觉](screenshots/sleep-verified.png)
 
 ## 运行
 
