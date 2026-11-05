@@ -1,27 +1,17 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export function createFurniture(scene, tools) {
-const { mat, box, cyl, blob, canvasTexture, rand, pick } = tools;
-
-class RoundedBoxGeometry extends THREE.ExtrudeGeometry {
-  constructor(width, height, depth, radius = 0.08) {
-    const r = Math.min(radius, width / 2, height / 2);
-    const shape = new THREE.Shape();
-    shape.moveTo(-width / 2 + r, -height / 2);
-    shape.lineTo(width / 2 - r, -height / 2);
-    shape.quadraticCurveTo(width / 2, -height / 2, width / 2, -height / 2 + r);
-    shape.lineTo(width / 2, height / 2 - r);
-    shape.quadraticCurveTo(width / 2, height / 2, width / 2 - r, height / 2);
-    shape.lineTo(-width / 2 + r, height / 2);
-    shape.quadraticCurveTo(-width / 2, height / 2, -width / 2, height / 2 - r);
-    shape.lineTo(-width / 2, -height / 2 + r);
-    shape.quadraticCurveTo(-width / 2, -height / 2, -width / 2 + r, -height / 2);
-    super(shape, { depth, bevelEnabled: true, bevelSegments: 2, bevelSize: r * 0.45, bevelThickness: r * 0.45, curveSegments: 2 });
-    this.translate(0, 0, -depth / 2);
-  }
+const { mat, box: makeBox, cyl, blob, canvasTexture, rand, pick } = tools;
+function box(w, h, d, material, x, y, z, parent = scene) {
+  const mesh = makeBox(w, h, d, material, x, y, z, parent);
+  mesh.geometry.dispose();
+  mesh.geometry = new RoundedBoxGeometry(w, h, d, 2, Math.min(0.045, w / 4, h / 4, d / 4));
+  return mesh;
 }
+
 const roundedBox = (w, h, d, material, x, y, z, radius = 0.08) => {
-  const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, radius), material instanceof THREE.Material ? material : mat(material));
+  const mesh = new THREE.Mesh(new RoundedBoxGeometry(w, h, d, 2, Math.min(radius, w / 2, h / 2, d / 2)), material instanceof THREE.Material ? material : mat(material));
   mesh.position.set(x, y + h / 2, z);
   mesh.castShadow = mesh.receiveShadow = true;
   scene.add(mesh);
@@ -115,6 +105,7 @@ box(0.12, 0.025, 0.012, '#8fb0f0', 0.72, 0.42, -3.964);
 box(0.05, 0.025, 0.012, '#7cbf8e', 0.72, 0.35, -3.964);
 
 // 办公椅（桌前，朝向显示器）
+const beforeChair = new Set(scene.children);
 const chairFrame = mat('#353746', { roughness: 0.42, metalness: 0.28 });
 const chairSeat = mat('#6e7895', { roughness: 0.72 });
 roundedBox(0.92, 0.16, 0.82, chairSeat, 1.4, 0.63, -2.95, 0.08);
@@ -125,9 +116,11 @@ cyl(0.07, 0.07, 0.48, chairFrame, 1.4, 0.27, -2.95);
 cyl(0.24, 0.24, 0.06, chairFrame, 1.4, 0.04, -2.95, 16);
 // 五星脚轮
 [[1.4, -2.95], [1.73, -2.95], [1.07, -2.95], [1.4, -2.68], [1.4, -3.22]].forEach(([x, z]) => {
-  box(0.34, 0.035, 0.045, chairFrame, (x + 1.4) / 2, 0.02, (z - 2.95) / 2 - 2.95);
+  box(0.34, 0.035, 0.045, chairFrame, (x + 1.4) / 2, 0.02, (z - 2.95) / 2);
   cyl(0.055, 0.055, 0.06, '#222532', x, -0.02, z, 10);
 });
+// Tuck the chair under the desk, clear of the character's approach and typing spot.
+scene.children.filter(mesh => !beforeChair.has(mesh)).forEach(mesh => { mesh.position.z -= 0.8; });
 
 // 桌面装饰：马克杯（圆柱 + 把手）
 cyl(0.1, 0.09, 0.2, '#f2b84b', 2.5, 1.05, -4.0);
@@ -154,7 +147,9 @@ blob(0.06, '#7cbf8e', 1, 1.2, 1, 0.2, 1.21, -4.6);
 roundedBox(1.9, 0.38, 3.0, wood, -3.95, 0, 2.0, 0.12);
 // 床头板（圆角 — 用略厚板 + 顶部圆柱边缘模拟）
 box(1.9, 1.05, 0.12, woodDark, -3.95, 0, 0.5);
-cyl(0.06, 0.06, 1.9, woodDark, -3.95, 1.05, 0.5);
+const headboardRail = cyl(0.06, 0.06, 1.9, woodDark, -3.95, 1.05, 0.5);
+headboardRail.rotation.z = Math.PI / 2;
+headboardRail.position.y = 1.05;
 // 床垫
 roundedBox(1.8, 0.26, 2.85, offWhite, -3.95, 0.38, 2.05, 0.12);
 
@@ -163,10 +158,18 @@ const pillow1 = blob(0.5, '#ffffff', 1.25, 0.28, 0.55, -3.6, 0.74, 0.95);
 const pillow2 = blob(0.45, '#dce8f5', 1.1, 0.24, 0.5, -4.3, 0.72, 1.0);
 
 // 被子 — 格子花纹条纹（用叠加的薄板模拟图案）
-box(1.86, 0.09, 1.75, dustyBlue, -3.95, 0.6, 2.6);
+const duvet = box(1.86, 0.09, 1.75, dustyBlue, -3.95, 0.6, 2.6);
+const duvetVertices = duvet.geometry.attributes.position;
+for (let i = 0; i < duvetVertices.count; i++) {
+  if (duvetVertices.getY(i) > 0) {
+    const x = duvetVertices.getX(i), z = duvetVertices.getZ(i);
+    duvetVertices.setY(i, duvetVertices.getY(i) + 0.035 * (1 + Math.cos(x * 4)) * (0.6 + 0.4 * Math.cos(z * 7)));
+  }
+}
+duvet.geometry.computeVertexNormals();
 // 被子上的条纹装饰
-box(1.86, 0.005, 0.12, '#a3c0e8', -3.95, 0.655, 2.2);
-box(1.86, 0.005, 0.12, '#a3c0e8', -3.95, 0.655, 3.0);
+box(1.86, 0.005, 0.12, '#f8d6c8', -3.95, 0.705, 2.2);
+box(1.86, 0.005, 0.12, '#f8d6c8', -3.95, 0.705, 3.0);
 // 被边折痕
 box(1.88, 0.03, 0.12, '#ffffff', -3.95, 0.69, 1.78);
 // 小毛毯（搭在被子角上）
@@ -241,8 +244,50 @@ const flameMat = mat('#ffb347', { emissive: '#ff8c00', emissiveIntensity: 0.8 })
 blob(0.02, null, 0.8, 1.6, 0.8, 3.8, 0.68, 1.5, scene, flameMat);
 
 // ── 串灯（后墙上方）──────────────────────────────────
+// A bedside cabinet and small reading light sit against the wall, outside paths.
+box(0.55, 0.48, 0.48, wood, -4.55, 0, 4.15);
+box(0.18, 0.035, 0.035, cream, -4.55, 0.25, 4.4);
+cyl(0.12, 0.14, 0.025, cream, -4.55, 0.48, 4.15);
+cyl(0.018, 0.018, 0.24, warmGray, -4.55, 0.5, 4.15);
+cyl(0.10, 0.18, 0.18, shadeMat, -4.55, 0.72, 4.15);
+// Desk lamp and cable, kept behind the keyboard.
+cyl(0.12, 0.14, 0.025, softGreen, 2.55, 1.05, -4.6);
+cyl(0.018, 0.018, 0.36, warmGray, 2.55, 1.08, -4.6);
+cyl(0.10, 0.16, 0.14, softGreen, 2.55, 1.4, -4.6);
+box(0.50, 0.012, 0.012, warmGray, 2.15, 1.055, -4.78);
+// Mug handle.
+const mugHandle = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.018, 6, 12), mat('#f2b84b'));
+mugHandle.position.set(2.61, 1.16, -4.0); scene.add(mugHandle);
+// Keycaps are batched with the other cream details during integration.
+for (let row = 0; row < 3; row++) for (let col = 0; col < 10; col++) {
+  box(0.065, 0.012, 0.055, cream, 0.91 + col * 0.085, 1.09, -4.05 + row * 0.085);
+}
+// Slippers beside the bed, outside the hub-to-bed route.
+for (const z of [3.6, 3.94]) {
+  blob(0.14, coralPink, 1.55, 0.35, 0.8, -2.88, 0.06, z);
+  blob(0.11, cream, 1.1, 0.35, 0.8, -2.93, 0.1, z);
+}
+// Corkboard, pinned notes, calendar and a shallow shelf on the back wall.
+box(1.1, 0.84, 0.05, wood, 1.75, 2.85, -4.94);
+box(1.0, 0.74, 0.03, '#c6a27b', 1.75, 2.90, -4.90);
+for (let i = 0; i < 3; i++) {
+  box(0.23, 0.27, 0.014, [cream, '#fff6a6', coralPink][i], 1.42 + i * 0.32, 3.08 + (i % 2) * 0.1, -4.87);
+  blob(0.025, '#e8735a', 1, 1, 0.5, 1.42 + i * 0.32, 3.32 + (i % 2) * 0.1, -4.85);
+}
+const calendar = canvasTexture(128, 160, (ctx, w, h) => {
+  ctx.fillStyle = '#fffaf2'; ctx.fillRect(0, 0, w, h);
+  ctx.fillStyle = '#df8d7b'; ctx.fillRect(0, 0, w, 32);
+  ctx.fillStyle = '#62584e'; ctx.font = '12px sans-serif';
+  ctx.fillText('A LITTLE JOY', 12, 22);
+  for (let i = 1; i <= 30; i++) ctx.fillText(String(i), 8 + ((i - 1) % 7) * 17, 55 + Math.floor((i - 1) / 7) * 21);
+});
+box(0.45, 0.56, 0.025, mat('#ffffff', {map: calendar.tex}), 2.75, 2.65, -4.93);
+box(0.95, 0.07, 0.28, wood, -3.6, 3.35, -4.83);
+box(0.3, 0.27, 0.22, cream, -3.65, 3.42, -4.8);
+box(0.09, 0.045, 0.01, woodDark, -3.65, 3.55, -4.68);
+
 const fairy = [];
-const fairyMat = new THREE.MeshBasicMaterial({ color: '#d8c7a6' });
+const fairyMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
 const fairyMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 8, 6), fairyMat, 16);
 const fairyDummy = new THREE.Object3D();
 for (let i = 0; i < 16; i++) {
@@ -250,7 +295,12 @@ for (let i = 0; i < 16; i++) {
   fairyDummy.position.set(x, y, -4.92);
   fairyDummy.updateMatrix();
   fairyMesh.setMatrixAt(i, fairyDummy.matrix);
-  fairy.push({ x, y, material: fairyMat });
+  fairyMesh.setColorAt(i, new THREE.Color('#d8c7a6'));
+  const instanceColor = new THREE.Color();
+  fairy.push({ material: { color: { setHSL(h, s, l) {
+    fairyMesh.setColorAt(i, instanceColor.setHSL(h, s, l));
+    fairyMesh.instanceColor.needsUpdate = true;
+  } } } });
 }
 fairyMesh.instanceMatrix.needsUpdate = true;
 scene.add(fairyMesh);
@@ -263,7 +313,7 @@ for (let i = 0; i < 15; i++) {
   const dx = x1 - x0, dy = y1 - y0, len = Math.sqrt(dx * dx + dy * dy);
   const wire = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, len, 4), fairyLineMat);
   wire.position.set((x0 + x1) / 2, (y0 + y1) / 2, -4.92);
-  wire.rotation.z = Math.atan2(dx, dy);
+  wire.rotation.z = -Math.atan2(dx, dy);
   wire.castShadow = false;
   scene.add(wire);
 }

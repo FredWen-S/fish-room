@@ -167,10 +167,5 @@ photoMesh.rotation.y = Math.PI / 2;
 photoMesh.position.set(-4.95, 4.125, 2.0);
 scene.add(photoMesh);
 
-// ── 天花板角落小装饰（和纸灯笼效果）────────────────────
-const lanternMat = mat('#fff6e8', { emissive: '#ffcf86', emissiveIntensity: 0.15 });
-blob(0.18, null, 1, 1.3, 1, 4.0, 4.5, 3.5, scene, lanternMat);
-cyl(0.005, 0.005, 0.5, '#9c6a43', 4.0, 4.6, 3.5);
-
 return { sky, clockTex, drawClock };
 }

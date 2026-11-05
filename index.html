@@ -146,13 +146,14 @@
 </form>
 <div class="banner hidden" id="banner"></div>
 
-<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }</script>
+<script type="importmap">{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }</script>
 <script type="module">
 import * as THREE from 'three';
 import { createMaterials } from './src/materials.js';
 import { createRoom } from './src/room.js';
 import { createFurniture } from './src/furniture.js';
 import { createLighting } from './src/lighting.js';
+import { batchStaticRoom } from './src/geometry.js';
 const V3 = THREE.Vector3;
 const $ = (id) => document.getElementById(id);
 
@@ -210,6 +211,7 @@ const hhmm = (ts) => new Date(ts * 1000).toTimeString().slice(0, 5);
 const roomTools = { mat, box, cyl, blob, canvasTexture, floorTex, floorMaterial, materials, rand, pick };
 const { sky, drawClock } = createRoom(scene, roomTools);
 const { screen, screenGlow, shadeMat, lampLight, plantLeaves, fairy } = createFurniture(scene, roomTools);
+batchStaticRoom(scene, new Set([...plantLeaves, ...scene.children.filter(mesh => mesh.material === shadeMat)]));
 const { sun, hemi, daylight, drawSky, light, lightTargets, applyDayClass } = createLighting(scene, sky, () => room, rand);
 
 // ------------------------------------------------------------------ 大肥鱼
