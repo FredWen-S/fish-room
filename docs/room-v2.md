@@ -1,6 +1,6 @@
 # 大肥鱼的小房间 v2
 
-当前状态：模块拆分已合并 main；家具和材质已依次合入 `integration/room-v2`，尚未合并 main。动作、Draw call、加载和材质纹理预算通过；性能门槛按前台 Chrome/Edge 的平均 ≥58 FPS、1% low ≥45 FPS、实际像素比 ≥1 且不低于原版对照判断；测试结果见文末。
+当前状态：模块拆分已合并 main；家具和材质已依次合入 `integration/room-v2`，尚未合并 main。动作、Draw call、加载和材质纹理预算通过；用户已批准将 v2 合并 main。1% low 未达标列为原版同样存在的已知问题，另在 perf/frame-hitch 定位；测试结果见文末。
 
 ## 设计
 
@@ -128,7 +128,7 @@ python server.py
 
 两次有效采样首尾均记录到同一 Chrome 前台窗口，页面末次状态为 visible 且 hasFocus=true。原始数据见 [chrome-original-benchmark.json](chrome-original-benchmark.json) 和 [chrome-integration-benchmark.json](chrome-integration-benchmark.json)。原版样本约 10.34 秒、207 帧；集成样本约 10.04 秒、673 帧。早期未聚焦采样、窗口最小化导致的超时，以及只有 1 帧的无效采样均不作为门槛证据。
 
-**结论：不合并 main。** 集成平均帧率与像素比达标，且本次平均与低帧率均好于原版，但 1% low 10.91 仍低于 45 FPS，未满足全部条件。集成中位帧间隔约 8.4ms，但 p99 为 91.7ms、最长约 150.1ms，瓶颈表现是间歇长帧。原版也有更严重的长帧，提示浏览器／系统调度或共享负载可能参与；尚无 CPU/GPU trace 证明根因，不能据此断言 GPU 已满或房间不存在性能问题。继续降低清晰度没有依据，保留像素比下限 1.0。
+**已知问题：间歇长帧导致 1% low 未达标，原版同样存在且本次对照更严重。用户已批准 v2 合并 main，后续在 `perf/frame-hitch` 独立定位。** 集成平均帧率与像素比达标，且本次平均与低帧率均好于原版，但 1% low 10.91 仍低于 45 FPS，未满足全部条件。集成中位帧间隔约 8.4ms，但 p99 为 91.7ms、最长约 150.1ms，瓶颈表现是间歇长帧。原版也有更严重的长帧，提示浏览器／系统调度或共享负载可能参与；尚无 CPU/GPU trace 证明根因，不能据此断言 GPU 已满或房间不存在性能问题。继续降低清晰度没有依据，保留像素比下限 1.0。
 
 集成这次采样没有记录到运行时异常或日志错误；原版记录了 favicon.ico 的 404，未捕获 JavaScript 异常。三时段、七动作的独立视觉回归结果补录如下；这些功能检查不改变 1% low 未达标的结论。
 
@@ -155,4 +155,4 @@ python server.py
 | 窗台眺望 | ![窗台眺望](screenshots/dfe4fdb_action_06_window_peek.webp) |
 | 地毯跳舞 | ![地毯跳舞](screenshots/dfe4fdb_action_07_rug_dance.webp) |
 
-收尾状态：分辨率修复、截图压缩、成员视觉回归与真 Chrome 对照数据已归档。由于低帧率门槛未通过，集成分支保留，不合并 main。
+收尾状态：分辨率修复、截图压缩、成员视觉回归与真 Chrome 对照数据已归档；用户批准 v2 合并 main。低帧率问题保留为已知问题，另开 perf/frame-hitch 跟进，不将历史测量改写为已达标。
