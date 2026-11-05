@@ -130,4 +130,29 @@ python server.py
 
 **结论：不合并 main。** 集成平均帧率与像素比达标，且本次平均与低帧率均好于原版，但 1% low 10.91 仍低于 45 FPS，未满足全部条件。集成中位帧间隔约 8.4ms，但 p99 为 91.7ms、最长约 150.1ms，瓶颈表现是间歇长帧。原版也有更严重的长帧，提示浏览器／系统调度或共享负载可能参与；尚无 CPU/GPU trace 证明根因，不能据此断言 GPU 已满或房间不存在性能问题。继续降低清晰度没有依据，保留像素比下限 1.0。
 
-集成这次采样没有记录到运行时异常或日志错误；原版记录了 favicon.ico 的 404，未捕获 JavaScript 异常。上述状态不能代替三时段、七动作的独立视觉回归，该回归已分派，报告返回后补录。
+集成这次采样没有记录到运行时异常或日志错误；原版记录了 favicon.ico 的 404，未捕获 JavaScript 异常。三时段、七动作的独立视觉回归结果补录如下；这些功能检查不改变 1% low 未达标的结论。
+
+
+### 修复版视觉回归（视觉测试成员报告）
+
+测试提交 `dfe4fdb`，真实本地服务 `127.0.0.1:18775`。视觉测试成员报告白天 hour=10、黄昏 hour=18、夜晚 hour=22 均为 98 draw calls、实际像素比 1.0；SSE 连接正常，全流程 0 page error / 0 console error。模拟慢帧时像素比仍保持 1.0。上述运行时指标来自成员报告，主管独立 Chrome 的采样为夜间 99–100 calls，不要求不同动作时刻的批次数完全一致。
+
+七动作点位回归均报告 arrived=true：桌前打字、床上睡眠、盆栽浇水、书架阅读、懒人沙发坐姿、窗台眺望、地毯跳舞。书架点位偏差约 0.007m，其余约 0；办公椅不遮挡打字轮廓，床上横躺与 0.82 缩放正常。主管另查看了桌前和床上截图，确认静态轮廓及睡姿；动作截图的 HUD 仍为 resting，截图用于动作／点位检查，不作为每个动作经服务端状态触发的完整流程证明。
+
+此次归档的 10 张 WebP 截图每张 68,448–71,112 字节，均小于 300KB。
+
+| 白天 | 黄昏 | 夜晚 |
+| --- | --- | --- |
+| ![白天](screenshots/dfe4fdb_day.webp) | ![黄昏](screenshots/dfe4fdb_dusk.webp) | ![夜晚](screenshots/dfe4fdb_night.webp) |
+
+| 动作点位 | 截图 |
+| --- | --- |
+| 桌前打字 | ![桌前打字](screenshots/dfe4fdb_action_01_desk_type.webp) |
+| 床上睡眠 | ![床上睡眠](screenshots/dfe4fdb_action_02_bed_sleep.webp) |
+| 盆栽浇水 | ![盆栽浇水](screenshots/dfe4fdb_action_03_plant_water.webp) |
+| 书架阅读 | ![书架阅读](screenshots/dfe4fdb_action_04_shelf_read.webp) |
+| 懒人沙发坐姿 | ![懒人沙发](screenshots/dfe4fdb_action_05_beanbag_sit.webp) |
+| 窗台眺望 | ![窗台眺望](screenshots/dfe4fdb_action_06_window_peek.webp) |
+| 地毯跳舞 | ![地毯跳舞](screenshots/dfe4fdb_action_07_rug_dance.webp) |
+
+收尾状态：分辨率修复、截图压缩、成员视觉回归与真 Chrome 对照数据已归档。由于低帧率门槛未通过，集成分支保留，不合并 main。
