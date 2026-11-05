@@ -1,0 +1,68 @@
+{
+  "baseline_main_d618b72": {
+    "day_screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\baseline_day.png",
+    "night_screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\baseline_night.png",
+    "day_info": {
+      "calls": 145,
+      "triangles": 28214,
+      "textures": 8,
+      "geometries": 144
+    },
+    "night_info": {
+      "calls": 143,
+      "triangles": 28190,
+      "textures": 8,
+      "geometries": 142
+    },
+    "demo_status": {
+      "working": {
+        "state": "working",
+        "errors": []
+      },
+      "qq": {
+        "state": "replying",
+        "errors": []
+      },
+      "resting": {
+        "state": "resting",
+        "errors": []
+      },
+      "error": {
+        "state": "error",
+        "errors": []
+      }
+    },
+    "total_errors": []
+  },
+  "feat_materials_1a5af52": {
+    "day_screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\materials_1a5af52_day.png",
+    "dusk_screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\materials_1a5af52_dusk.png",
+    "night_screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\materials_1a5af52_night.png",
+    "day_info": {
+      "calls": 144,
+      "triangles": 28202,
+      "textures": 21,
+      "geometries": 143,
+      "toneMapping": 4,
+      "toneMappingExposure": 1.05
+    },
+    "dusk_info": {
+      "calls": 146,
+      "triangles": 28226,
+      "textures": 21,
+      "geometries": 145
+    },
+    "night_info": {
+      "calls": 145,
+      "triangles": 28214,
+      "textures": 21,
+      "geometries": 144
+    },
+    "wraptext_error_in_1a5af52": "Page.evaluate: ReferenceError: wrapText is not defined\n    at drawScreen (http://127.0.0.1:18768/?hour=22&debug:754:5)\n    at step (http://127.0.0.1:18768/?hour=22&debug:1017:31)\n    at Object.run (http://127.0.0.1:18768/?hour=22&debug:1037:49)\n    at eval (eval at evaluate (:303:30), <anonymous>:1:21)\n    at UtilityScript.evaluate (<anonymous>:310:18)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)",
+    "page_errors": [
+      "wrapText is not defined",
+      "wrapText is not defined",
+      "wrapText is not defined"
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "tested_at": "2026-11-04T23:52:50-06:00",
+  "browser_tab_audit": {
+    "open_tabs_count": 1,
+    "tabs": [
+      {
+        "id": "f002b447-949d-437c-a719-ac66ef1c3d31",
+        "url": "http://127.0.0.1:18766/?debug",
+        "title": "大肥鱼的小房间"
+      }
+    ],
+    "competing_scenes": 0,
+    "conclusion": "全程仅保留单个前台测试tab，无其他后台tab或并行三维场景挤占GPU"
+  },
+  "benchmarks": [
+    {
+      "dpr": 1.0,
+      "canvas_client": { "w": 1185, "h": 800 },
+      "canvas_buffer": { "w": 1200, "h": 800 },
+      "duration_ms": 5015.8,
+      "sampled_frames": 202,
+      "avg_fps": 40.27,
+      "median_dt_ms": 24.9,
+      "avg_dt_ms": 24.79,
+      "low_1pct_fps": 17.18
+    },
+    {
+      "dpr": 1.5,
+      "canvas_client": { "w": 1185, "h": 800 },
+      "canvas_buffer": { "w": 1800, "h": 1200 },
+      "duration_ms": 5014.4,
+      "sampled_frames": 145,
+      "avg_fps": 28.92,
+      "median_dt_ms": 33.3,
+      "avg_dt_ms": 34.48,
+      "low_1pct_fps": 12.02
+    },
+    {
+      "dpr": 2.0,
+      "canvas_client": { "w": 1185, "h": 800 },
+      "canvas_buffer": { "w": 2400, "h": 1600 },
+      "duration_ms": 5029.2,
+      "sampled_frames": 177,
+      "avg_fps": 35.19,
+      "median_dt_ms": 25.0,
+      "avg_dt_ms": 28.34,
+      "low_1pct_fps": 17.12
+    }
+  ]
+}

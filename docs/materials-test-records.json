@@ -1,0 +1,588 @@
+{
+  "char_load_timing": {
+    "navToReadyMs": 1444,
+    "totalWallTimeMs": 1455,
+    "standeeTextureDimensions": [
+      373,
+      564
+    ],
+    "note": "Time from navigationStart until TextureLoader completes assets/back.png and applies to charMesh"
+  },
+  "connection_status": {
+    "connText": "● 实时",
+    "feedCount": 1
+  },
+  "env_specs": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/149.0.7827.55 Safari/537.36",
+    "devicePixelRatio": 1,
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "glVendor": "Google Inc. (Intel)",
+    "glRenderer": "ANGLE (Intel, Intel(R) Arc(TM) 130T GPU (16GB) (0x00007D51) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  },
+  "fps_sampling": {
+    "samplingDurationMs": 5215,
+    "totalFrames": 313,
+    "avgFps": 60.01,
+    "fps1PercentLow": 59.52,
+    "frameTimeMinMs": -1.1,
+    "frameTimeMaxMs": 33.3,
+    "frameTimeMedianMs": 16.7,
+    "frameTime95thMs": 16.7,
+    "frameTime99thMs": 16.8
+  },
+  "three_period_perf": {
+    "day": {
+      "calls": 149,
+      "triangles": 28370,
+      "textures": 29,
+      "geometries": 149,
+      "toneMapping": 4,
+      "toneMappingExposure": 1.05
+    },
+    "dusk": {
+      "calls": 147,
+      "triangles": 28218,
+      "textures": 28,
+      "geometries": 145,
+      "toneMappingExposure": 1.094
+    },
+    "night": {
+      "calls": 148,
+      "triangles": 28230,
+      "textures": 28,
+      "geometries": 146,
+      "toneMappingExposure": 1.16
+    },
+    "screenshots": {
+      "day": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v3_day_26ca271.png",
+      "dusk": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v3_dusk_26ca271.png",
+      "night": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\v3_night_26ca271.png"
+    }
+  },
+  "floor_material_audit": {
+    "meshName": "FloorBox",
+    "position": [
+      0,
+      -0.15,
+      0
+    ],
+    "geometrySize": [
+      10,
+      0.3,
+      10
+    ],
+    "materialType": "MeshStandardMaterial",
+    "roughness": 0.52,
+    "metalness": 0,
+    "hasMap": true,
+    "mapColorSpace": "srgb",
+    "mapRepeat": [
+      2,
+      2
+    ],
+    "hasRoughnessMap": true,
+    "roughnessColorSpace": "NoColorSpace",
+    "roughnessRepeat": [
+      2,
+      2
+    ],
+    "hasNormalMap": true,
+    "normalColorSpace": "NoColorSpace",
+    "normalScale": [
+      0.35,
+      0.35
+    ],
+    "normalRepeat": [
+      2,
+      2
+    ],
+    "receiveShadow": true,
+    "castShadow": true
+  },
+  "texture_and_vram_audit": {
+    "threeMemoryTexturesCount": 28,
+    "sceneMaterials": {
+      "count": 24,
+      "rawBytes": 6875136,
+      "rawMiB": "6.56",
+      "totalBytesWithMipmap": 9166847,
+      "totalMiB": "8.74",
+      "list": [
+        {
+          "id": 5,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 512,
+          "height": 512,
+          "generateMipmaps": true,
+          "rawBytes": 1048576,
+          "totalBytesWithMipmap": 1398101,
+          "isCanvas": true
+        },
+        {
+          "id": 6,
+          "slot": "roughnessMap",
+          "colorSpace": "NoColorSpace",
+          "width": 512,
+          "height": 512,
+          "generateMipmaps": true,
+          "rawBytes": 1048576,
+          "totalBytesWithMipmap": 1398101,
+          "isCanvas": true
+        },
+        {
+          "id": 7,
+          "slot": "normalMap",
+          "colorSpace": "NoColorSpace",
+          "width": 512,
+          "height": 512,
+          "generateMipmaps": true,
+          "rawBytes": 1048576,
+          "totalBytesWithMipmap": 1398101,
+          "isCanvas": true
+        },
+        {
+          "id": 8,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 9,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 15,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 210,
+          "generateMipmaps": true,
+          "rawBytes": 215040,
+          "totalBytesWithMipmap": 286720,
+          "isCanvas": true
+        },
+        {
+          "id": 10,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 16,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 200,
+          "generateMipmaps": true,
+          "rawBytes": 204800,
+          "totalBytesWithMipmap": 273067,
+          "isCanvas": true
+        },
+        {
+          "id": 17,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 18,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 19,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 20,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 21,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 22,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 23,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 24,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 25,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 26,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 64,
+          "height": 128,
+          "generateMipmaps": true,
+          "rawBytes": 32768,
+          "totalBytesWithMipmap": 43691,
+          "isCanvas": true
+        },
+        {
+          "id": 27,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 512,
+          "height": 320,
+          "generateMipmaps": true,
+          "rawBytes": 655360,
+          "totalBytesWithMipmap": 873813,
+          "isCanvas": true
+        },
+        {
+          "id": 14,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 11,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 12,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 13,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        },
+        {
+          "id": 28,
+          "slot": "map",
+          "colorSpace": "srgb",
+          "width": 256,
+          "height": 256,
+          "generateMipmaps": true,
+          "rawBytes": 262144,
+          "totalBytesWithMipmap": 349525,
+          "isCanvas": true
+        }
+      ]
+    },
+    "characterTextures": {
+      "count": 1,
+      "rawBytes": 1038400,
+      "rawMiB": "0.99",
+      "totalBytesWithMipmap": 1384533,
+      "totalMiB": "1.32",
+      "list": [
+        {
+          "id": 29,
+          "name": "standee_active_view",
+          "width": 440,
+          "height": 590,
+          "generateMipmaps": true,
+          "rawBytes": 1038400,
+          "totalBytesWithMipmap": 1384533
+        }
+      ]
+    },
+    "shadowRenderTargets": {
+      "count": 2,
+      "totalBytes": 8388608,
+      "totalMiB": "8.00",
+      "targets": [
+        {
+          "lightType": "DirectionalLight",
+          "lightColor": "#fff7eb",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 4194304,
+          "mb": "4.00"
+        },
+        {
+          "lightType": "DirectionalLight",
+          "lightColor": "#fff5e0",
+          "width": 1024,
+          "height": 1024,
+          "bytes": 4194304,
+          "mb": "4.00"
+        }
+      ]
+    },
+    "totalGpuVramMiB": "18.06"
+  },
+  "seven_actions_validation": [
+    {
+      "arrived": true,
+      "actual_spot": "desk",
+      "pos": [
+        1.15,
+        0,
+        -3.15
+      ],
+      "action_name": "idle",
+      "view": "back",
+      "flip": false,
+      "id": "01_desk_type",
+      "target_spot": "desk",
+      "target_action": "type",
+      "expected_pos": [
+        1.15,
+        0,
+        -3.15
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_01_desk_type.png",
+      "distance_to_target": 0.0,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "bed",
+      "pos": [
+        -3.85,
+        0.98,
+        2.95
+      ],
+      "action_name": "sleep",
+      "view": "back",
+      "flip": false,
+      "id": "02_bed_sleep",
+      "target_spot": "bed",
+      "target_action": "sleep",
+      "expected_pos": [
+        -3.85,
+        0.98,
+        2.95
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_02_bed_sleep.png",
+      "distance_to_target": 0.0,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "plant",
+      "pos": [
+        3.35,
+        0,
+        -3.35
+      ],
+      "action_name": "water",
+      "view": "side",
+      "flip": true,
+      "id": "03_plant_water",
+      "target_spot": "plant",
+      "target_action": "water",
+      "expected_pos": [
+        3.35,
+        0,
+        -3.35
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_03_plant_water.png",
+      "distance_to_target": 0.0,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "shelf",
+      "pos": [
+        -2.398,
+        0,
+        -3.843
+      ],
+      "action_name": "read",
+      "view": "front",
+      "flip": false,
+      "id": "04_shelf_read",
+      "target_spot": "shelf",
+      "target_action": "read",
+      "expected_pos": [
+        -2.4,
+        0,
+        -3.85
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_04_shelf_read.png",
+      "distance_to_target": 0.0073,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "beanbag",
+      "pos": [
+        -2.85,
+        0.5,
+        -1.05
+      ],
+      "action_name": "daze",
+      "view": "front",
+      "flip": false,
+      "id": "05_beanbag_sit",
+      "target_spot": "beanbag",
+      "target_action": "daze",
+      "expected_pos": [
+        -2.85,
+        0.5,
+        -1.05
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_05_beanbag_sit.png",
+      "distance_to_target": 0.0,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "window",
+      "pos": [
+        -4.05,
+        0,
+        -2
+      ],
+      "action_name": "peek",
+      "view": "back",
+      "flip": false,
+      "id": "06_window_peek",
+      "target_spot": "window",
+      "target_action": "peek",
+      "expected_pos": [
+        -4.05,
+        0,
+        -2.0
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_06_window_peek.png",
+      "distance_to_target": 0.0,
+      "success": true
+    },
+    {
+      "arrived": true,
+      "actual_spot": "rug",
+      "pos": [
+        0.6,
+        0,
+        1.3
+      ],
+      "action_name": "dance",
+      "view": "side",
+      "flip": false,
+      "id": "07_rug_dance",
+      "target_spot": "rug",
+      "target_action": "dance",
+      "expected_pos": [
+        0.6,
+        0,
+        1.3
+      ],
+      "screenshot": "C:\\Users\\15821\\OpenBot\\Agents\\agent-d05ef244-94c2-490d-a27b-157bfcc3be7a\\action_26ca271_07_rug_dance.png",
+      "distance_to_target": 0.0,
+      "success": true
+    }
+  ],
+  "page_errors": [],
+  "console_logs": []
+}
