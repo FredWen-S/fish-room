@@ -340,7 +340,8 @@ def take_notes():
 
 VALID_STATES = {'idle', 'thinking', 'replying', 'working', 'resting', 'error'}
 STATIC = {'/': 'index.html', '/index.html': 'index.html'}
-ASSET = re.compile(r'/assets/([A-Za-z0-9_-]+\.png)')
+ASSET = re.compile(r'/assets/([A-Za-z0-9_-]+\.(?:jpg|png|webp))')
+MODULE = re.compile(r'/src/([A-Za-z0-9_-]+\.js)')
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -380,7 +381,12 @@ class Handler(BaseHTTPRequestHandler):
         name, kind = STATIC.get(path), 'text/html; charset=utf-8'
         asset = ASSET.fullmatch(path)
         if asset and (ROOT / 'assets' / asset.group(1)).is_file():
-            name, kind = 'assets/' + asset.group(1), 'image/png'
+            name, kind = 'assets/' + asset.group(1), {
+                'jpg': 'image/jpeg', 'png': 'image/png', 'webp': 'image/webp'
+            }[asset.group(1).rsplit('.', 1)[1]]
+        module = MODULE.fullmatch(path)
+        if module and (ROOT / 'src' / module.group(1)).is_file():
+            name, kind = 'src/' + module.group(1), 'text/javascript'
         if not name or not self._loopback():
             return self._json(404, {'error': 'not found'})
         body = (ROOT / name).read_bytes()
