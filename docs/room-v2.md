@@ -161,3 +161,5 @@ python server.py
 ## 卡顿调查跟踪
 
 v2 已合并 main。四个独立诊断开关和新的 Performance 轨迹分析保存在 `perf/frame-hitch` 分支的 [frame-hitch.md](frame-hitch.md)。已知的低帧率问题仍未宣告修复；当前证据指向 GPU 进程等待／调度，尚未确定房间代码中的因果项。
+
+后续诊断已验证静态阴影存在重复绘制开销：同段交替实验 GPU elapsed 约降低 29%，修复提交 e5857c7 已通过三时段、七动作及动态阴影回归。该优化仍在 perf/frame-hitch；独立帧率样本受负载波动影响，不能宣称间歇长帧已解决。详见上述调查报告。

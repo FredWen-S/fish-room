@@ -141,4 +141,23 @@ WPA 的 GPU Utilization (FM) 表全段共 4,388 条，GPU Time 合计约 7,194,5
 
 原始数据：[original](frame-hitch/original-postfix-comparison.json)、[main](frame-hitch/main-postfix-comparison.json)、[candidate](frame-hitch/fixed-postfix-comparison.json)。候选采样时失效检查位于 frame；提交前仅将同一检查移入 step 以覆盖 debug run 路径，随后通过上述阴影图回归。该表不能替代最终提交的视觉回归。
 
-本轮仍没有达到 1% low ≥45 的稳定条件，也不能把独立时段的 FPS 差异当作因果收益。可确定的是缓存消除了重复阴影工作，同段 GPU 交替实验显示约 29% 的开销下降。最终提交的三时段／七动作视觉回归已分派；结果返回后补录。此前 GPU 等待／调度的全部根因仍未确认，不宣告所有卡顿已经修复。
+本轮仍没有达到 1% low ≥45 的稳定条件，也不能把独立时段的 FPS 差异当作因果收益。可确定的是缓存消除了重复阴影工作，同段 GPU 交替实验显示约 29% 的开销下降。最终提交的三时段／七动作视觉回归已通过，详见下节。此前 GPU 等待／调度的全部根因仍未确认，不宣告所有卡顿已经修复。
+
+
+## 最终源码 e5857c7 的独立视觉回归
+
+视觉测试成员已对 e5857c7 完成独立回归（共享频道报告 sequence 144）。三个时段均为 Draw Calls 98、像素比 1.0、shadowMap.autoUpdate=false；SSE 正常，控制台与页面错误均为零。七个动作均到达目标，阅读点偏差约 0.007m，其余报告偏差为 0；办公椅无遮挡。
+
+重点检查确认：植物弹动期间刷新、归零后最后刷新；信封飞行投影随位置更新，移除后无幽灵投影。与 ?liveshadow 对照无目视差异。这里的视觉结论来自成员报告；主管另行完成的阴影图哈希检查见前文。
+
+三时段、七动作、植物复位、信封移除和实时阴影对照共 13 张 WebP 已归档于 [screenshots/frame-hitch](screenshots/frame-hitch)，每张 74,212–96,108 字节，均低于 300KB。
+
+| 三时段 | 截图 |
+| --- | --- |
+| 白天 | [day](screenshots/frame-hitch/e5857c7_day.webp) |
+| 黄昏 | [dusk](screenshots/frame-hitch/e5857c7_dusk.webp) |
+| 夜晚 | [night](screenshots/frame-hitch/e5857c7_night.webp) |
+| 动态阴影复位 | [plant](screenshots/frame-hitch/e5857c7_shadow_plant_settled.webp)、[envelope](screenshots/frame-hitch/e5857c7_shadow_envelope_settled.webp) |
+| 实时阴影对照 | [liveshadow](screenshots/frame-hitch/e5857c7_liveshadow_comparison.webp) |
+
+最终核对时原测试 Chrome 进程已退出，因此未把候选的历史帧率样本冒充为最终提交的新样本。三版本采样及源码位置调整的区别保留在前节。此分支可验证的成果是减少静态阴影重复绘制并通过视觉回归；尚未证明历史 GPU 等待全部消失，1% low 也未稳定达到 45。优化保留在 perf/frame-hitch，未合入 main。
