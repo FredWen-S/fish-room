@@ -120,7 +120,10 @@ cyl(0.24, 0.24, 0.06, chairFrame, 1.4, 0.04, -2.95, 16);
   cyl(0.055, 0.055, 0.06, '#222532', x, -0.02, z, 10);
 });
 // Tuck the chair under the desk, clear of the character's approach and typing spot.
-scene.children.filter(mesh => !beforeChair.has(mesh)).forEach(mesh => { mesh.position.z -= 0.8; });
+scene.children.filter(mesh => !beforeChair.has(mesh)).forEach(mesh => {
+  mesh.position.x -= 1.05;
+  mesh.position.z -= 1.2;
+});
 
 // 桌面装饰：马克杯（圆柱 + 把手）
 cyl(0.1, 0.09, 0.2, '#f2b84b', 2.5, 1.05, -4.0);
