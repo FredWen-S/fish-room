@@ -42,7 +42,7 @@ open http://127.0.0.1:18765
 - 界面文字和注释用中文。
 - **角色坐标耦合**：`index.html` 里的 `SPOTS`（desk/bed/window/shelf/plant/rug/beanbag 的 `pos` 和 `near`）决定角色站在哪里做动作。挪家具时要同步改 `SPOTS`，并确认动作还对得上。角色的走路路线是 `HUB` (0.3, 0, 0.1) 到各个 `near` 点之间的直线，路上不能放东西。
 - 立绘每个方向只有一张，动作都是靠换视图、弹跳、倾斜、挤压拉伸、表情、小道具拼出来的。不要把立牌改成会接收光照的材质，它的颜色是在 `updateChar` 里按房间亮度手动调的。
-- `/api/event` 的字段格式和 AstrBot 插件的接口保持不变。
+- `/api/event` 的已有字段格式保持不变，只允许加可选的新字段（比如 `session`），不带新字段的老请求行为不能变。
 - 性能预算：draw call 低于 150（v2 实测约 100），材质贴图低于 16MB。
 
 ## 验证
@@ -60,7 +60,7 @@ open http://127.0.0.1:18765
 2. **端口被多个进程同时占用**：Windows 上 `ThreadingHTTPServer` 默认 `allow_reuse_address = True`，会有好几个 `server.py` 同时监听 18765，请求随机落到某一个上。改成 Windows 下设 `allow_reuse_address = False`（macOS 和 Linux 保持 True，方便快速重启），并在端口被占用时打印清楚的提示。
 3. **macOS 启动脚本**：加一个 `start.command` 或 `start.sh`，启动服务并打开浏览器；README 里补上 macOS 的说明。
 4. **间歇长帧**（1% low 偏低）：调查和候选修复在 `perf/frame-hitch` 分支（`docs/frame-hitch.md`）。结论：同一份 main 在 Windows 上测出过 116.9 FPS，也测出过 40.9 FPS，被后台负载影响得很厉害，根因没有确认。那个分支上的「静态阴影复用」（`e5857c7`）能把 GPU 耗时从 3.53ms 降到 2.52ms，但没合进 main。在 Mac 上重新测一遍，有稳定收益再合。分支里的 `?noblur/noclock/noscreen/noshadow` 诊断开关不要合进 main。
-5. **AstrBot 插件从没在真实 AstrBot 上测过**：用到的钩子是 `on_llm_request`、`on_llm_response`、`after_message_sent`，以及可选的 `on_using_llm_tool`。
+5. **接入 QQ：会话并发与插件实测（当前任务，2026-11-05 安排）**：完整要求见 `docs/qq-integration.md`。`/api/event` 加一个可选的 `session` 字段，按会话计数，解决并发时提前回到闲逛、分段回复重复计数、指令回复打断会话的问题。插件升到 1.1.0，在 Mac 上用真实的 AstrBot（WebChat）实测钩子；前端在书桌上堆排队的信封。老格式的上报必须照样能用。
 6. 可选：给立绘画逐帧动作（走路迈腿、眨眼、挥手），或者拆成 Live2D 那样的分层部件。
 
 ## 分支
