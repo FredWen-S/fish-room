@@ -1,8 +1,10 @@
 import * as THREE from 'three';
+import { createPlantKit } from './plants.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export function createFurniture(scene, tools) {
 const { mat, box: makeBox, cyl, blob, canvasTexture, rand, pick } = tools;
+const plants = createPlantKit(scene, canvasTexture);
 function box(w, h, d, material, x, y, z, parent = scene) {
   const mesh = makeBox(w, h, d, material, x, y, z, parent);
   mesh.geometry.dispose();
@@ -39,7 +41,8 @@ const bookColors = ['#e8735a', '#f2b84b', '#5f8fd8', '#7cbf8e', '#a37ad6', '#f29
   let x = -3.18;
   while (x < -1.7) {
     const bw = rand(0.09, 0.17), bh = rand(0.34, 0.52);
-    if (x + bw > -1.62) break;
+    // 第三层右侧给小盆栽留空，避免叶子埋进书本和侧板。
+    if (x + bw > (row === 2 ? -2.16 : -1.62)) break;
     const book = box(bw, bh, rand(0.32, 0.42), pick(bookColors), x + bw / 2, y + 0.07, -4.72);
     if (Math.random() < 0.12) { book.rotation.z = -0.18; x += 0.05; }
     x += bw + 0.012;
@@ -51,10 +54,8 @@ const bookColors = ['#e8735a', '#f2b84b', '#5f8fd8', '#7cbf8e', '#a37ad6', '#f29
     box(0.22, 0.30, 0.02, '#dce8f5', -1.72, y + 0.10, -4.59);
   }
   if (row === 2) {
-    // 小仙人掌盆栽
-    cyl(0.09, 0.08, 0.10, coralPink, -1.72, y + 0.07, -4.62);
-    blob(0.08, '#6aa36f', 0.7, 1.4, 0.7, -1.72, y + 0.26, -4.62);
-    blob(0.05, '#6aa36f', 1.0, 0.9, 0.7, -1.65, y + 0.34, -4.62);
+    // 小型龟背竹，与主盆栽共用手绘纹理。
+    plants.build(-1.92, y + 0.07, -4.53, 0.23, 5);
   }
 });
 
@@ -145,9 +146,8 @@ const stickyMat = mat('#fff6a6');
 box(0.25, 0.01, 0.25, stickyMat, 0.45, 1.05, -3.95);
 box(0.25, 0.01, 0.25, '#ffcce0', 0.48, 1.06, -3.93).rotation.y = 0.15;
 
-// 桌上小盆栽
-cyl(0.07, 0.06, 0.08, '#d4b896', 0.2, 1.05, -4.6);
-blob(0.06, '#7cbf8e', 1, 1.2, 1, 0.2, 1.21, -4.6);
+// 桌上小盆栽，保持低矮轮廓。
+plants.build(0.2, 1.05, -4.6, 0.19, 5);
 
 // ── 床 ─────────────────────────────────────────────────
 // 床架（日式矮床框）
@@ -210,17 +210,9 @@ blob(1, '#f2b84b', 0.95, 0.45, 0.95, -2.9, 0.42, -1.3);
 blob(0.25, coralPink, 1.1, 0.7, 0.8, -2.7, 0.72, -1.15);
 
 // ── 植物 ────────────────────────────────────────────────
-// 花盆 + 底碟
-cyl(0.38, 0.3, 0.04, '#d4b896', 4.25, 0, -4.25, 24); // 底碟
-cyl(0.36, 0.27, 0.62, '#e8735a', 4.25, 0.04, -4.25);
-const plantLeaves = [];
-for (let i = 0; i < 7; i++) {
-  const a = i / 7 * Math.PI * 2;
-  const leaf = blob(0.5, i % 2 ? '#6aa36f' : '#5b9461', 0.22, 0.85, 0.12,
-    4.25 + Math.cos(a) * 0.22, 1.25, -4.25 + Math.sin(a) * 0.22);
-  leaf.rotation.set(Math.sin(a) * 0.5, -a, Math.cos(a) * 0.5);
-  plantLeaves.push(leaf);
-}
+// 主角龟背竹：不改变角色站位和通行路线。
+plants.build(4.25, 0, -4.25, 1, 9, true);
+const plantLeaves = plants.plantLeaves;
 
 // ── 墙面装饰 ────────────────────────────────────────────
 // 左墙小挂钩 + 小包

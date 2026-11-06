@@ -385,7 +385,7 @@ const ACTIONS = {
       p.view = 'side'; p.flip = true;
       const pour = k > 0.2 && k < 0.85; a.props[0].rot = pour ? 0.75 : 0.1;
       if (pour && t - (a.data.d || 0) > 0.08) { a.data.d = t; waterDrop(anchor(-0.7, 0.42)); }
-      if (k > 0.85) plantBounce = 1;
+      if (k > 0.85 && !a.data.bounced) { a.data.bounced = true; plantBounce = 1; }
     } },
   read: { dur: 6.5, start: (a) => { say(IDLE_LINES.shelf()); holdProp(a, 'book', 0, 0.36, 0.62); },
     update(a, k, p, t) { p.view = 'front'; p.bob += Math.sin(t * 2) * 0.01; a.props[0].sx = (t % 1.6) < 0.15 ? 0.55 : 1; } },
@@ -547,7 +547,17 @@ function updateChar(dt, t) {
     W.snackV += 12 * dt; W.snack.position.y = Math.max(0.22, W.snack.position.y - W.snackV * dt);
     if (W.snack.position.y <= 0.22 && W.snackV > 3) { W.snackV = -W.snackV * 0.3; W.snack.position.y = 0.23; }
   }
-  if (plantBounce > 0) { plantBounce = Math.max(0, plantBounce - dt * 0.7); plantLeaves.forEach((leaf, i) => { leaf.scale.y = 0.85 * (1 + plantBounce * 0.14 * Math.sin(t * 12 + i)); }); }
+  plantBounce = Math.max(0, plantBounce - dt * 0.7);
+  plantLeaves.forEach(leaf => {
+    const base = leaf.userData;
+    const bounce = base.main ? Math.sin((1 - plantBounce) * Math.PI * 4) * plantBounce * 0.08 : 0;
+    leaf.position.copy(base.basePosition); leaf.position.y += bounce * 0.3;
+    leaf.rotation.copy(base.baseRotation);
+    leaf.rotation.z += Math.sin(t * 1.15 + base.phase) * 0.025 + bounce * 0.4;
+    leaf.rotation.x += Math.sin(t * 0.83 + base.phase) * 0.018;
+    leaf.scale.copy(base.baseScale); leaf.scale.y *= 1 + bounce;
+    base.sync();
+  });
 
   // 接下来做什么
   if (settled && !cur) {
@@ -708,7 +718,9 @@ function sparkle() {
 function waterDrop(from) {
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.035, 6, 5), dropMat);
   const vx = rand(0.3, 0.7);
-  spawn(mesh, 0.55, (p) => { const a = p.age; mesh.position.set(from.x + vx * a, from.y - 3.5 * a * a, from.z - vx * a); });
+  // 壶嘴轨迹落在盆内：到达土面即结束，避免水滴穿过花盆和地板。
+  const fallTime = Math.sqrt(Math.max(0.01, from.y - 0.585) / 3.5);
+  spawn(mesh, fallTime, (p) => { const a = Math.min(p.age, fallTime); mesh.position.set(from.x + vx * a, from.y - 3.5 * a * a, from.z - vx * a); });
 }
 // 小道具画在 canvas 上：书、洒水壶（壶嘴朝左，往右时镜像）、小鱼干
 const PROP_TEX = {
@@ -1045,7 +1057,7 @@ function frame(timestamp) {
   requestAnimationFrame(frame);
 }
 drawSky(); drawClock(); applyDayClass();
-if (location.search.includes('debug')) window.__room = { THREE, renderer, scene, camera, char, W, goTo, SPOTS, room, resize, act, dropSnack,
+if (location.search.includes('debug')) window.__room = { plantLeaves, waterOrigin: () => anchor(-0.7, 0.42), THREE, renderer, scene, camera, char, W, goTo, SPOTS, room, resize, act, dropSnack,
   run(sec) { for (let i = 0; i < sec * 30; i++) step(1 / 30); renderer.render(scene, camera); },
   look(x, y, z, zoom) { camera.zoom = zoom; camera.position.set(x + 13, y + 11.5, z + 13); camera.lookAt(x, y, z); camera.updateProjectionMatrix(); renderer.render(scene, camera); } };
 requestAnimationFrame(frame);
