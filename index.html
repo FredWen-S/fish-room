@@ -151,6 +151,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { createMaterials } from './src/materials.js';
+import { createPlantKit } from './src/plants.js';
 import { createRoom } from './src/room.js';
 import { createFurniture } from './src/furniture.js';
 import { createLighting } from './src/lighting.js';
@@ -209,7 +210,8 @@ const lerpAngle = (a, b, t) => a + ((((b - a + Math.PI) % (Math.PI * 2)) + Math.
 const hhmm = (ts) => new Date(ts * 1000).toTimeString().slice(0, 5);
 
 // ------------------------------------------------------------------ 房间
-const roomTools = { mat, box, cyl, blob, canvasTexture, floorTex, floorMaterial, materials, rand, pick };
+const plants = createPlantKit(scene, canvasTexture);
+const roomTools = { plants, mat, box, cyl, blob, canvasTexture, floorTex, floorMaterial, materials, rand, pick };
 const { sky, drawClock } = createRoom(scene, roomTools);
 const { screen, screenGlow, shadeMat, lampLight, plantLeaves, fairy } = createFurniture(scene, roomTools);
 batchStaticRoom(scene, new Set([...plantLeaves, ...scene.children.filter(mesh => mesh.material === shadeMat)]));

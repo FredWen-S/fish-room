@@ -1,10 +1,9 @@
 import * as THREE from 'three';
-import { createPlantKit } from './plants.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 
 export function createFurniture(scene, tools) {
 const { mat, box: makeBox, cyl, blob, canvasTexture, rand, pick } = tools;
-const plants = createPlantKit(scene, canvasTexture);
+const { plants } = tools;
 function box(w, h, d, material, x, y, z, parent = scene) {
   const mesh = makeBox(w, h, d, material, x, y, z, parent);
   mesh.geometry.dispose();

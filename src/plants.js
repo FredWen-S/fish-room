@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-// 三盆共用纹理和实例批次；叶片与叶柄通过同一变换更新，避免摇摆时脱节。
-export function createPlantKit(scene, canvasTexture) {
+// 所有盆栽共用纹理和实例批次；叶片与叶柄通过同一变换更新，避免摇摆时脱节。
+export function createPlantKit(scene, canvasTexture, capacity = 32) {
   const leafMap = canvasTexture(512, 512, (ctx, w, h) => {
     const g = ctx.createLinearGradient(0, h, w, 0);
     g.addColorStop(0, '#284e39'); g.addColorStop(0.48, '#568253'); g.addColorStop(1, '#95ae70');
@@ -73,8 +73,9 @@ export function createPlantKit(scene, canvasTexture) {
     uv.setXY(i, x + 0.5, (y + 0.1) / 1.15);
   }
   geo.computeVertexNormals();
-  const leavesMesh = new THREE.InstancedMesh(geo, foliage, 19);
-  const stemsMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.009, 0.016, 1, 6), green, 19);
+  const leavesMesh = new THREE.InstancedMesh(geo, foliage, capacity);
+  const stemsMesh = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.009, 0.016, 1, 6), green, capacity);
+  leavesMesh.count = stemsMesh.count = 0;
   leavesMesh.name = '龟背竹叶片实例'; stemsMesh.name = '龟背竹叶柄实例';
   for (const mesh of [leavesMesh, stemsMesh]) {
     mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage); mesh.castShadow = mesh.receiveShadow = true;
@@ -89,6 +90,7 @@ export function createPlantKit(scene, canvasTexture) {
     mesh.scale.setScalar(size); mesh.castShadow = mesh.receiveShadow = true; scene.add(mesh); return mesh;
   }
   function build(x, y, z, size, count, main = false) {
+    if (plantLeaves.length + count > capacity) throw new Error('植物实例容量不足');
     const origin = new THREE.Vector3(x, y, z);
     add(potGeo, ceramic, origin, size, 0.04); add(saucerGeo, ceramic, origin, size);
     const dirt = add(new THREE.CircleGeometry(0.315, 24), soil, origin, size, 0.585); dirt.rotation.x = -Math.PI / 2;
@@ -105,7 +107,7 @@ export function createPlantKit(scene, canvasTexture) {
       leaf.scale.set((0.55 + tier * 0.10) * size, (0.63 + (i % 4) * 0.075) * size, size);
       const index = plantLeaves.length;
       const root = new THREE.Vector3(x + Math.cos(a) * 0.06 * size, y + 0.58 * size, z + Math.sin(a) * 0.06 * size);
-      leaf.userData = { basePosition: leaf.position.clone(), baseRotation: leaf.rotation.clone(), baseScale: leaf.scale.clone(), phase: i * 1.73, main, index,
+      leaf.userData = { basePosition: leaf.position.clone(), baseRotation: leaf.rotation.clone(), baseScale: leaf.scale.clone(), phase: index * 1.73, main, index,
         sync() {
           leaf.updateMatrix(); leavesMesh.setMatrixAt(index, leaf.matrix);
           stemDummy.position.copy(root).lerp(leaf.position, 0.5);
@@ -116,6 +118,7 @@ export function createPlantKit(scene, canvasTexture) {
           leavesMesh.instanceMatrix.needsUpdate = stemsMesh.instanceMatrix.needsUpdate = true;
         } };
       leaf.userData.sync(); plantLeaves.push(leaf);
+      leavesMesh.count = stemsMesh.count = plantLeaves.length;
     }
   }
   return { build, plantLeaves };

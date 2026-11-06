@@ -1,0 +1,543 @@
+{
+  "actions": [
+    {
+      "button": "工作",
+      "state": "working",
+      "spot": "shelf",
+      "arrived": true,
+      "action": "research",
+      "view": "front",
+      "calls": 93
+    },
+    {
+      "button": "休息",
+      "state": "resting",
+      "spot": "bed",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 93
+    },
+    {
+      "button": "出错",
+      "state": "error",
+      "spot": "bed",
+      "arrived": true,
+      "action": "dizzy",
+      "view": "front",
+      "calls": 91
+    },
+    {
+      "button": "闲逛",
+      "state": "idle",
+      "spot": "beanbag",
+      "arrived": true,
+      "action": null,
+      "view": "front",
+      "calls": 91
+    },
+    {
+      "button": "书桌工作",
+      "state": "working",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "test": "read",
+      "state": "idle",
+      "spot": "shelf",
+      "arrived": true,
+      "action": "read",
+      "view": "front",
+      "calls": 92
+    },
+    {
+      "test": "dance",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "dance",
+      "view": "side",
+      "calls": 93
+    },
+    {
+      "test": "yawn",
+      "state": "idle",
+      "spot": "beanbag",
+      "arrived": true,
+      "action": "yawn",
+      "view": "front",
+      "calls": 92
+    },
+    {
+      "test": "peek",
+      "state": "idle",
+      "spot": "window",
+      "arrived": true,
+      "action": "peek",
+      "view": "back",
+      "calls": 91
+    }
+  ],
+  "interactions": [
+    {
+      "test": "摸头",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "pet",
+      "view": "front",
+      "calls": 94
+    },
+    {
+      "test": "戳身体",
+      "state": "idle",
+      "spot": "rug",
+      "arrived": true,
+      "action": "poke",
+      "view": "front",
+      "calls": 93
+    },
+    {
+      "test": "拖拽持有",
+      "held": true
+    },
+    {
+      "test": "拖拽落地",
+      "held": false,
+      "state": "idle",
+      "spot": "free",
+      "arrived": true,
+      "action": null,
+      "view": "front",
+      "calls": 93
+    },
+    {
+      "test": "喂食",
+      "ate": true,
+      "snackGone": true
+    }
+  ],
+  "water": {
+    "origin": [
+      4.099515210766744,
+      1.1064531624430929,
+      -4.071230939519282
+    ],
+    "landing": [
+      {
+        "x": 4.215311564792592,
+        "y": 0.585,
+        "z": -4.18702729354513,
+        "radius": 0.07189470978722816
+      },
+      {
+        "x": 4.369706703493723,
+        "y": 0.585,
+        "z": -4.341422432246261,
+        "radius": 0.15062455304217892
+      }
+    ],
+    "action": "water",
+    "spot": "plant",
+    "bounce": [
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      [
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914,
+        1.0702795472726914
+      ],
+      [
+        0.965381363712489,
+        0.9653813637124891,
+        0.965381363712489,
+        0.965381363712489,
+        0.965381363712489,
+        0.9653813637124891,
+        0.965381363712489,
+        0.965381363712489,
+        0.965381363712489
+      ],
+      [
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898,
+        1.0240960581286898
+      ],
+      [
+        0.988418213728435,
+        0.988418213728435,
+        0.988418213728435,
+        0.9884182137284349,
+        0.988418213728435,
+        0.988418213728435,
+        0.988418213728435,
+        0.9884182137284349,
+        0.988418213728435
+      ],
+      [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    ],
+    "restored": true
+  },
+  "qq": [
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": false,
+      "action": "alert",
+      "view": "front",
+      "calls": 94
+    },
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 97
+    },
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 96
+    },
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 96
+    },
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 94
+    },
+    {
+      "state": "thinking",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 93
+    },
+    {
+      "state": "replying",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 92
+    },
+    {
+      "state": "replying",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "replying",
+      "spot": "desk",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": "celebrate",
+      "view": "front",
+      "calls": 114
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": "celebrate",
+      "view": "front",
+      "calls": 110
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 93
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": false,
+      "action": null,
+      "view": "side",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    },
+    {
+      "state": "idle",
+      "spot": "window",
+      "arrived": true,
+      "action": null,
+      "view": "back",
+      "calls": 91
+    }
+  ],
+  "wind": [
+    -0.008923163506361242,
+    0.012292843704407391,
+    0.005025545294228884,
+    -0.01388626320405173,
+    -0.000622711119808661,
+    0.014083702483344993,
+    -0.003842723942516141,
+    -0.012865313054283484,
+    0.007921851577335381,
+    0.01035357909556145,
+    -0.01120459879303004,
+    -0.006801004169412178,
+    0.013360952387762776,
+    0.0025647271443242636,
+    -0.014174135038355296,
+    0.0019293808257384026,
+    0.013562397833737444,
+    -0.0062295289499684214,
+    -0.011587238458719118,
+    0.009903425139572652,
+    0.008447218857505656,
+    -0.01258173415029265,
+    -0.004458003884667133,
+    0.013995206699723817,
+    2.0627649594651132e-05,
+    -0.014001746984841468,
+    0.004418822274446871,
+    0.01260069751352294,
+    -0.008414049847109362,
+    -0.009932905201958053
+  ],
+  "realtime": true,
+  "errors": [],
+  "threeHours": [
+    {
+      "hour": 10,
+      "calls": 94,
+      "triangles": 86324,
+      "textureMiB": 12.583028157552084,
+      "leaves": 30
+    },
+    {
+      "hour": 18,
+      "calls": 91,
+      "triangles": 87080,
+      "textureMiB": 12.416361490885416,
+      "leaves": 30
+    },
+    {
+      "hour": 22,
+      "calls": 93,
+      "triangles": 87084,
+      "textureMiB": 12.49969482421875,
+      "leaves": 30
+    }
+  ],
+  "peakCalls": 114,
+  "screenshots": [
+    {
+      "file": "after-10-detail.webp",
+      "bytes": 45104
+    },
+    {
+      "file": "after-10-full.webp",
+      "bytes": 69848
+    },
+    {
+      "file": "after-18-detail.webp",
+      "bytes": 45392
+    },
+    {
+      "file": "after-18-full.webp",
+      "bytes": 69996
+    },
+    {
+      "file": "after-22-detail.webp",
+      "bytes": 43688
+    },
+    {
+      "file": "after-22-full.webp",
+      "bytes": 65362
+    },
+    {
+      "file": "regression-celebrate.webp",
+      "bytes": 114704
+    },
+    {
+      "file": "regression-dance.webp",
+      "bytes": 111418
+    },
+    {
+      "file": "regression-desk.webp",
+      "bytes": 110778
+    },
+    {
+      "file": "regression-error.webp",
+      "bytes": 109730
+    },
+    {
+      "file": "regression-idle.webp",
+      "bytes": 107922
+    },
+    {
+      "file": "regression-message.webp",
+      "bytes": 109686
+    },
+    {
+      "file": "regression-peek.webp",
+      "bytes": 110666
+    },
+    {
+      "file": "regression-read.webp",
+      "bytes": 113280
+    },
+    {
+      "file": "regression-reply.webp",
+      "bytes": 110772
+    },
+    {
+      "file": "regression-resting.webp",
+      "bytes": 108712
+    },
+    {
+      "file": "regression-working.webp",
+      "bytes": 113052
+    },
+    {
+      "file": "regression-yawn.webp",
+      "bytes": 112648
+    },
+    {
+      "file": "water-bounce.webp",
+      "bytes": 56420
+    },
+    {
+      "file": "water-pouring.webp",
+      "bytes": 56262
+    },
+    {
+      "file": "water-settled.webp",
+      "bytes": 56100
+    },
+    {
+      "file": "water-ui.webp",
+      "bytes": 100310
+    }
+  ],
+  "allViewsAndMaterialMiB": 14.95556640625
+}

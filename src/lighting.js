@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { paintSeascape } from './seascape.js';
 
 export function createLighting(scene, sky, room, rand) {
 // ------------------------------------------------------------------ 光照与时间
@@ -104,67 +105,10 @@ function daylight(date = new Date()) {
 }
 
 function drawSky() {
-  const { ctx } = sky, w = 256, h = 210, d = daylight(), hour = new URLSearchParams(location.search).has('hour') ? Number(new URLSearchParams(location.search).get('hour')) : new Date().getHours();
-  const dusk = d > 0 && d < 1;
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-
-  if (d >= 1) {
-    // 晴朗白天：日系治愈晴空渐变
-    g.addColorStop(0, '#64bbf0');
-    g.addColorStop(0.65, '#bce1fa');
-    g.addColorStop(1, '#eaf5ff');
-  } else if (dusk) {
-    // 黄昏暮色：晚霞珊瑚粉与金橙
-    g.addColorStop(0, hour < 12 ? '#8eb9e4' : '#52528a');
-    g.addColorStop(0.48, '#e88772');
-    g.addColorStop(1, '#ffd092');
-  } else {
-    // 静谧深蓝夜晚
-    g.addColorStop(0, '#091026');
-    g.addColorStop(0.6, '#171f43');
-    g.addColorStop(1, '#2a3362');
-  }
-  ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
-
-  if (d < 0.5) {
-    // 星空与月色
-    for (let i = 0; i < 50; i++) {
-      ctx.globalAlpha = rand(0.35, 1);
-      const starColors = ['#ffffff', '#fff2d6', '#d6e6ff'];
-      ctx.fillStyle = starColors[i % 3];
-      const sz = i % 6 === 0 ? 2.5 : 1.4;
-      ctx.fillRect((i * 97) % (w - 8) + 4, (i * 53) % (h * 0.72) + 4, sz, sz);
-    }
-    ctx.globalAlpha = 1;
-    // 弯月与月晕
-    ctx.fillStyle = 'rgba(255, 245, 190, 0.16)'; ctx.beginPath(); ctx.arc(190, 52, 30, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#fff6cd'; ctx.beginPath(); ctx.arc(190, 52, 21, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = '#151d42'; ctx.beginPath(); ctx.arc(201, 45, 18, 0, Math.PI * 2); ctx.fill();
-  } else {
-    // 白天与黄昏的柔和白云
-    ctx.fillStyle = dusk ? '#ffd394' : '#fff5bf';
-    ctx.beginPath(); ctx.arc(dusk ? 60 : 196, dusk ? 145 : 50, 22, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = dusk ? 'rgba(255,235,220,0.85)' : 'rgba(255,255,255,0.92)';
-    [[52, 60], [146, 106], [105, 78]].forEach(([x, y]) => {
-      ctx.beginPath();
-      ctx.arc(x, y, 15, 0, Math.PI * 2);
-      ctx.arc(x + 20, y - 8, 20, 0, Math.PI * 2);
-      ctx.arc(x + 40, y, 14, 0, Math.PI * 2);
-      ctx.fill();
-    });
-  }
-
-  // 远山轮廓
-  ctx.fillStyle = d < 0.5 ? '#0f142f' : (dusk ? '#647466' : '#78ad84');
-  ctx.beginPath(); ctx.moveTo(0, h);
-  for (let x = 0; x <= w; x += 16) ctx.lineTo(x, h - 28 - Math.sin(x / 30) * 10);
-  ctx.lineTo(w, h); ctx.fill();
-
-  // 远景小窗温暖灯火
-  if (d < 0.5) {
-    ctx.fillStyle = '#ffd672';
-    [[30, 185], [90, 190], [170, 183], [220, 192]].forEach(([x, y]) => ctx.fillRect(x, y, 5, 5));
-  }
+  const params = new URLSearchParams(location.search);
+  const value = Number(params.get('hour'));
+  const hour = params.has('hour') && Number.isFinite(value) && value >= 0 && value < 24 ? value : new Date().getHours();
+  paintSeascape(sky.ctx, daylight(), hour);
   sky.tex.needsUpdate = true;
 }
 
