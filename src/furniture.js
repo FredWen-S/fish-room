@@ -130,10 +130,31 @@ for (let i = 0; i < 5; i++) {
   chair.add(cyl(0.065, 0.065, 0.08, '#222532', x, 0, z, 10));
 }
 
-// 桌面装饰：马克杯（圆柱 + 把手）
-cyl(0.1, 0.09, 0.2, '#f2b84b', 2.5, 1.05, -4.0);
+// 白色釉面马克杯：双面蓝鲸印花，正面朝向房间镜头。
+const mugPrint = canvasTexture(256, 256, ctx => {
+  ctx.fillStyle = '#fffdf7'; ctx.fillRect(0, 0, 256, 256);
+  for (const x of [32, 160]) {
+    ctx.fillStyle = '#639db9';
+    ctx.beginPath(); ctx.ellipse(x - 3, 142, 19, 27, -0.12, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x + 10, 150); ctx.quadraticCurveTo(x + 24, 144, x + 24, 119);
+    ctx.quadraticCurveTo(x + 12, 118, x + 16, 107); ctx.quadraticCurveTo(x + 25, 107, x + 27, 117);
+    ctx.quadraticCurveTo(x + 31, 106, x + 35, 110); ctx.quadraticCurveTo(x + 35, 127, x + 27, 129);
+    ctx.quadraticCurveTo(x + 29, 160, x + 10, 164); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#d6e9eb'; ctx.beginPath(); ctx.ellipse(x - 5, 155, 14, 10, 0, 0, Math.PI); ctx.fill();
+    ctx.fillStyle = '#284e69'; ctx.beginPath(); ctx.ellipse(x - 13, 137, 2, 3, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#82b6cc'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 5, 112); ctx.quadraticCurveTo(x - 6, 95, x - 13, 98);
+    ctx.moveTo(x - 5, 112); ctx.quadraticCurveTo(x - 2, 94, x + 4, 98); ctx.stroke();
+  }
+});
+const mugGlaze = mat('#fffdf7', { roughness: 0.23, metalness: 0.02 });
+const mugBody = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.2, 24, 1, true),
+  mat('#ffffff', { map: mugPrint.tex, roughness: 0.23, metalness: 0.02 }));
+mugBody.position.set(2.5, 1.15, -4.0); mugBody.castShadow = mugBody.receiveShadow = true; scene.add(mugBody);
+const mugRim = new THREE.Mesh(new THREE.TorusGeometry(0.094, 0.008, 6, 24), mugGlaze);
+mugRim.rotation.x = Math.PI / 2; mugRim.position.set(2.5, 1.25, -4.0); scene.add(mugRim);
 // 杯子里的"咖啡"
-cyl(0.085, 0.085, 0.01, '#6b4226', 2.5, 1.24, -4.0);
+cyl(0.085, 0.085, 0.01, '#6b4226', 2.5, 1.235, -4.0);
 
 // 笔筒
 cyl(0.07, 0.06, 0.18, coralPink, 0.55, 1.05, -4.55);
@@ -254,8 +275,8 @@ cyl(0.12, 0.14, 0.025, softGreen, 2.55, 1.05, -4.6);
 cyl(0.018, 0.018, 0.36, warmGray, 2.55, 1.08, -4.6);
 cyl(0.10, 0.16, 0.14, softGreen, 2.55, 1.4, -4.6);
 box(0.50, 0.012, 0.012, warmGray, 2.15, 1.055, -4.78);
-// Mug handle.
-const mugHandle = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.018, 6, 12), mat('#f2b84b'));
+// 白色陶瓷杯柄。
+const mugHandle = new THREE.Mesh(new THREE.TorusGeometry(0.065, 0.018, 6, 12), mugGlaze);
 mugHandle.position.set(2.61, 1.16, -4.0); scene.add(mugHandle);
 // Keycaps are batched with the other cream details during integration.
 for (let row = 0; row < 3; row++) for (let col = 0; col < 10; col++) {
