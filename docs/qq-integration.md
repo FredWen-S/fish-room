@@ -2,6 +2,25 @@
 
 2026-11-05 定稿，交给 Codex 实现。实现完把结果写进 `docs/qq-integration-test.md`。
 
+## 0. 本机环境（Windows，全部在这一台机器上）
+
+| 东西 | 位置 |
+|---|---|
+| 小房间 | `C:\fish\fish-room`，`http://127.0.0.1:18765`，`config.json` 里现在 `host` 是 `127.0.0.1` |
+| QQ 大肥鱼部署 | `C:\fish\DSdeploy`（当前分支 `feat/watchdog-qzone-hot`，**有大量没提交的改动**） |
+| AstrBot 容器 | `dsdeploy-f77b96e605-astrbot-1`，AstrBot 4.29.3，面板 `http://127.0.0.1:24735` |
+| NapCat 容器 | `dsdeploy-f77b96e605-napcat-1`，面板 `http://127.0.0.1:35030` |
+| 插件目录（挂进容器） | `C:\fish\DSdeploy\data\astrbot\plugins\` → 容器里 `/AstrBot/data/plugins/` |
+| 大肥鱼增强插件源码 | `C:\fish\DSdeploy\plugins\astrbot_plugin_dafeiyu_plus\`，部署副本在上面的插件目录里，两份内容一样 |
+
+已经确认（2026-11-05，对照容器里的 `/AstrBot/astrbot/core/star/register/star_handler.py`）：4.29.3 有 `on_llm_request`、`on_llm_response`、`on_using_llm_tool`、`on_llm_tool_respond`、`after_message_sent`，`AstrMessageEvent` 有 `set_extra` / `get_extra` / `unified_msg_origin`。具体参数仍以源码为准，可以用 `docker exec dsdeploy-f77b96e605-astrbot-1 ...` 读。
+
+**这个 AstrBot 是真实在跑的 QQ 机器人，操作规矩：**
+- 可以往插件目录里放或更新 `astrbot_plugin_fish_room`，在 AstrBot 面板里重载插件；**不要重启容器、不要改 AstrBot 的模型和人设配置、不要动 NapCat**。
+- 测试消息优先用 AstrBot 面板自带的 WebChat 发，不用真实 QQ 号刷屏。需要在真实 QQ 上测时，先问用户。
+- 在 `C:\fish\DSdeploy` 里**不要提交、stash、切分支、reset**，那些没提交的改动是用户的。只允许改 `plugins/astrbot_plugin_dafeiyu_plus/` 并同步到部署副本，见第 4 节。
+- Docker Desktop 里访问 `host.docker.internal` 进来的请求不是本机回环，所以小房间要把 `host` 改成 `0.0.0.0`，插件里填 `event_token`。`config.json` 不能提交，token 不要打印到日志或文档里。改完 `host` 后要重启小房间；重启前确认 18765 上只有一个 `server.py`（Windows 上可能有多个进程同时占着这个端口，见 AGENTS.md 待办第 2 条）。
+
 ## 1. 架构（不变）
 
 ```
@@ -87,7 +106,11 @@ self.sessions = {}  # sid -> {'state', 'detail', 'who', 'where', 'source', 'open
 {"type": "state", "state": "idle", "session": "qzone-diary-2026-11-05", "source": "dafeiyu_plus"}
 ```
 
-`dafeiyu_plus` 在 `C:\fish\DSdeploy` 里，不在这个仓库。它的改动由 Windows 这边来做，Codex 只要把约定写清楚。
+`dafeiyu_plus` 不在这个仓库里，但在本机（`C:\fish\DSdeploy\plugins\astrbot_plugin_dafeiyu_plus\`），这次一起改：
+- `share_hot`（每日热点私聊分享）和 `run_diary` / `write_diary`（QQ 空间日记）开始时上报 `working`，结束或出错时上报 `idle`，sid 用 `f'{任务名}-{日期}'`。
+- 上报地址和 token 在它的 `_conf_schema.json` 里加两个配置项 `room_url`、`room_token`，默认 `room_url` 为空；**为空时完全不上报**，不能影响没有小房间的用户。
+- 同样发出去就不管，3 秒超时，失败只警告一次。
+- 改完源码以后，同步到部署副本 `C:\fish\DSdeploy\data\astrbot\plugins\astrbot_plugin_dafeiyu_plus\`，然后在面板里重载。不要在 DSdeploy 里提交，把改了哪些文件写进测试记录，由用户自己决定什么时候提交。
 
 ## 5. 前端（`index.html`）
 
@@ -101,19 +124,19 @@ self.sessions = {}  # sid -> {'state', 'detail', 'who', 'where', 'source', 'open
 
 1. **`tools/fake_astrbot.py`**（只用标准库）：按 AstrBot 的时序模拟各种场景，包括并发三人、分段回复、指令回复（没有 sid）、工具调用、漏掉结束信号、不带 session 的老格式请求。支持 `--url` 和 `--token`，方便测试局域网和 token 的情况。
 2. **`tests/test_sessions.py`**（unittest）：直接测试 `Room` 的会话逻辑，包括优先级、关闭、重复 `msg_out`、超时、上限 50、匿名会话兼容、error 和 resting 的交互。注意：导入 `server.py` 时会读写 `config.json`，测试不能改动或生成真实的 `config.json`。可以加一个环境变量 `FISH_ROOM_CONFIG` 指定配置路径，或者把 `load_config()` 改成在 `main()` 里调用。
-3. **真实的 AstrBot（在 Mac 上，不需要 QQ）**：用 Docker 或 `uv` 装最新版 AstrBot，用它自带的 WebChat 当消息来源；模型提供商用 DeepSeek，Key 由用户提供，**不要写进仓库**。把插件拷进 `data/plugins/` 并加载。
-   - Docker 访问 Mac 主机用 `http://host.docker.internal:18765`。如果连不上，就把小房间的 `host` 设成 `0.0.0.0`，这时请求会被当成外部请求，必须带 token。
-   - 记录每个钩子是否触发、触发顺序、分段回复时 `after_message_sent` 触发几次、工具钩子是否存在，写进 `docs/qq-integration-test.md`。
+3. **本机真实的 AstrBot**（第 0 节的容器）：把插件放进插件目录，在面板里配置 `room_url = http://host.docker.internal:18765` 和 token，重载插件，然后用 WebChat 发消息。
+   - 记录每个钩子是否触发、触发顺序、分段回复时 `after_message_sent` 触发几次、工具调用（比如让它查热榜）时的事件，写进 `docs/qq-integration-test.md`。
+   - 用 `热点`、`写日记` 这两个管理员指令手动触发 `dafeiyu_plus` 的任务，确认房间里显示“工作中”，结束后回到闲逛。**`写日记` 默认要先确认才发布，测试时不要确认发布。**
    - 截图：并发时桌上的信封堆、排队提示、回完以后回到闲逛。
-4. 回归检查：照 `AGENTS.md` 的“验证”清单走一遍。draw call 仍然低于 150。
-
-**接真实 QQ 的最终联调**（Windows 上的 `C:\fish\DSdeploy`、NapCat、扫码）不在这次的范围里，由 Windows 这边来做。
+4. **真实 QQ**：上面都通过以后，告诉用户可以用 QQ 私聊和群聊各发一条消息，Codex 看房间和日志确认，把结果补进测试记录。
+5. 回归检查：照 `AGENTS.md` 的“验证”清单走一遍。draw call 仍然低于 150。
 
 ## 7. 完成标准
 
 - 老格式的上报不用改就能用。
 - 三个人并发时，状态不会提前回到 idle；三个会话都关闭后，2 秒内回到 idle。
 - 分段回复只算一次回复，指令回复不会打断正在进行的会话。
-- `python3 -m unittest` 全部通过，`fake_astrbot.py` 的每个场景都有记录。
-- 在真实的 AstrBot（WebChat）上跑通一次，并有记录。
+- `python -m unittest` 全部通过，`fake_astrbot.py` 的每个场景都有记录。
+- 在本机真实的 AstrBot（WebChat）上跑通一次，`dafeiyu_plus` 的两个后台任务能在房间里看到，都有记录。
+- 测试完成后 AstrBot 和 NapCat 容器照常运行，QQ 回复不受影响；`C:\fish\DSdeploy` 的 git 状态里除了 `dafeiyu_plus` 那几个文件，没有别的变化。
 - README 的“接上 QQ 大肥鱼”一节更新为新的协议和后台任务约定，插件 `metadata.yaml` 升到 1.1.0。

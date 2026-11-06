@@ -8,14 +8,16 @@
 房间里住着一个鲸鱼兜帽 Q 版少女（三视图立绘做成的立牌），会走到书桌、床、书架、窗边、植物旁做对应动作。
 它既能直接和用户聊天（DeepSeek API），也能接收外部 agent 的状态上报（比如 QQ 机器人 AstrBot）。
 
-## 运行（macOS）
+## 运行（Windows 本机）
 
-```bash
-python3 server.py          # 只用标准库，Python 3.10+
-open http://127.0.0.1:18765
+开发和测试都在这台 Windows 上，仓库在 `C:\fish\fish-room`。QQ 机器人（AstrBot + NapCat，Docker）也在本机，在 `C:\fish\DSdeploy`，详细情况见 `docs/qq-integration.md` 第 0 节。
+
+```powershell
+python server.py           # 只用标准库，Python 3.10+；也可以双击 启动小房间.bat
+start http://127.0.0.1:18765
 ```
 
-- `启动小房间.bat` 只能在 Windows 上用。macOS 上直接用上面的命令。
+- 启动前确认 18765 上没有别的 `server.py`（`Get-NetTCPConnection -LocalPort 18765 -State Listen`）。用户平时开着一个，要重启就先停掉它；测完要留一个在跑。
 - 第一次运行会生成 `config.json`（字段见 `config.example.json`）。DeepSeek Key 填在 `deepseek_api_key`，也可以用环境变量 `DEEPSEEK_API_KEY`。**`config.json` 和 `room/` 已经写进 `.gitignore`，永远不要提交它们**：前者有 Key 和 event_token，后者有聊天记录。
 - 没有 Key 也能跑：左上角的「演示」按钮可以切换所有状态。
 - 调试参数：`?debug` 会把内部对象挂到 `window.__room` 上（`run(秒)` 手动快进动画，`look(x,y,z,zoom)` 移动镜头，`act('water')` 触发动作，`goTo('desk')` 让角色走过去）；`?hour=22` 把昼夜固定在某个小时。
@@ -56,11 +58,11 @@ open http://127.0.0.1:18765
 
 ## 待办（按优先级）
 
-1. **办公椅穿模：已修复（2026-11-05，Mac 验收）**。椅子改为局部坐标的 `THREE.Group`，放在 (−0.5, 0, −3.0)，旋转 −30°，靠背顶端 1.65；重建五星脚和落地脚轮，组合家具纳入静态合批。三时段截图、家具包围盒与角色路线、演示和互动检查见 `docs/chair-fix.md`。
-2. **端口被多个进程同时占用**：Windows 上 `ThreadingHTTPServer` 默认 `allow_reuse_address = True`，会有好几个 `server.py` 同时监听 18765，请求随机落到某一个上。改成 Windows 下设 `allow_reuse_address = False`（macOS 和 Linux 保持 True，方便快速重启），并在端口被占用时打印清楚的提示。
-3. **macOS 启动脚本**：加一个 `start.command` 或 `start.sh`，启动服务并打开浏览器；README 里补上 macOS 的说明。
-4. **间歇长帧**（1% low 偏低）：调查和候选修复在 `perf/frame-hitch` 分支（`docs/frame-hitch.md`）。结论：同一份 main 在 Windows 上测出过 116.9 FPS，也测出过 40.9 FPS，被后台负载影响得很厉害，根因没有确认。那个分支上的「静态阴影复用」（`e5857c7`）能把 GPU 耗时从 3.53ms 降到 2.52ms，但没合进 main。在 Mac 上重新测一遍，有稳定收益再合。分支里的 `?noblur/noclock/noscreen/noshadow` 诊断开关不要合进 main。
-5. **接入 QQ：会话并发与插件实测（当前任务，2026-11-05 安排）**：完整要求见 `docs/qq-integration.md`。`/api/event` 加一个可选的 `session` 字段，按会话计数，解决并发时提前回到闲逛、分段回复重复计数、指令回复打断会话的问题。插件升到 1.1.0，在 Mac 上用真实的 AstrBot（WebChat）实测钩子；前端在书桌上堆排队的信封。老格式的上报必须照样能用。
+1. **办公椅穿模：已修复（2026-11-05）**。椅子改为局部坐标的 `THREE.Group`，放在 (−0.5, 0, −3.0)，旋转 −30°，靠背顶端 1.65；重建五星脚和落地脚轮，组合家具纳入静态合批。三时段截图、家具包围盒与角色路线、演示和互动检查见 `docs/chair-fix.md`。
+2. **端口被多个进程同时占用**：Windows 上 `ThreadingHTTPServer` 默认 `allow_reuse_address = True`，会有好几个 `server.py` 同时监听 18765，请求随机落到某一个上。改成 Windows 下设 `allow_reuse_address = False`（其他系统保持 True），并在端口被占用时打印清楚的提示。做接入 QQ 时要重启小房间，可以顺手一起修。
+3. ~~macOS 启动脚本~~：不需要了，开发环境全在 Windows 本机（2026-11-05）。
+4. **间歇长帧**（1% low 偏低）：调查和候选修复在 `perf/frame-hitch` 分支（`docs/frame-hitch.md`）。结论：同一份 main 在 Windows 上测出过 116.9 FPS，也测出过 40.9 FPS，被后台负载影响得很厉害，根因没有确认。那个分支上的「静态阴影复用」（`e5857c7`）能把 GPU 耗时从 3.53ms 降到 2.52ms，但没合进 main。在后台负载稳定时重新测一遍，有稳定收益再合。分支里的 `?noblur/noclock/noscreen/noshadow` 诊断开关不要合进 main。
+5. **接入 QQ：会话并发与插件实测（当前任务，2026-11-05 安排）**：完整要求见 `docs/qq-integration.md`。`/api/event` 加一个可选的 `session` 字段，按会话计数，解决并发时提前回到闲逛、分段回复重复计数、指令回复打断会话的问题。插件升到 1.1.0，在本机真实的 AstrBot（WebChat）上实测钩子，`dafeiyu_plus` 的定时任务也接上上报；前端在书桌上堆排队的信封。老格式的上报必须照样能用。
 6. 可选：给立绘画逐帧动作（走路迈腿、眨眼、挥手），或者拆成 Live2D 那样的分层部件。
 
 ## 分支
